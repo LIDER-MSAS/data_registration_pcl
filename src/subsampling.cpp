@@ -11,86 +11,129 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-float       default_leaf_size = 0.01f;
+float       leaf_size = 0.1f;
 std::string default_field ("z");
 double      default_filter_min = -std::numeric_limits<double>::max ();
 double      default_filter_max = std::numeric_limits<double>::max ();
 
 int main (int argc, char** argv)
 {
-  print_info ("Downsample a model using pcl::VoxelGrid \n USAGE: subsampling leaf_size input_model output_model\n");
+	//print_info ("Downsample a model using pcl::VoxelGrid \n USAGE: subsampling leaf_size input_model output_model\n");
 
-  std::string param_leafSize = argv[1];
-  std::string param_inputModel = argv[2];
-  std::string param_outputModel = argv[3];
+	std::cout << "Usage:\n";
+	std::cout << argv[0] << " input_model.xml output_model.xml parameters\n";
+	std::cout << " -l <leaf_size>\t\tSet the voxel grid leaf size. Default: " << leaf_size << std::endl;
+	
+	if(argc<3)
+	{
+		return -1;
+	}
 
-  float leafSize = boost::lexical_cast<float, std::string>(param_leafSize);
-  /// models
-  data_model inputModel;
-  data_model outputModel;
-  inputModel.loadFile(param_inputModel);
+	std::string param_inputModel = argv[1];
+	std::string param_outputModel = argv[2];
+	std::string param_leaf_size;
 
-  /// create new path for data
-  boost::filesystem::path pathinputXML(param_inputModel);
-  boost::filesystem::path pathouputXML(param_outputModel);
 
-  boost::filesystem::path pathOfNewDataDirectory = pathinputXML.parent_path();
-  std::string relativePathToData = "data_subsampled"+boost::lexical_cast<std::string,float>(leafSize);
-  pathOfNewDataDirectory/=relativePathToData;
+	
+	float _l;
+	if(pcl::console::parse_argument (argc, argv, "-l", _l)!=-1)
+	{
+		leaf_size=_l;
+	}
 
-  /// create new directory for data
-  std::cout <<"creating directory with path :" << pathOfNewDataDirectory <<"\n";
-  boost::filesystem::create_directory(pathOfNewDataDirectory);
+	//Generate text from values of parameters
+	std::ostringstream ss;
+    ss << std::fixed << std::setprecision(3);
+	ss << leaf_size;
+	param_leaf_size=ss.str();
 
-  /// save relative path to model's data
-  outputModel.setDataSetPath(relativePathToData);
-  
-  /// loads clouds ids in input model
-  std::vector <std::string> cloud_ids;
-  inputModel.getAllScansId(cloud_ids);
+	std::cout << "voxel grid leaf size = " << param_leaf_size << "\n";
 
-  /// sets some info about algorithm
-  outputModel.setAlgorithmName("Voxel grid subsampling");
-  outputModel.addAlgorithmParam("leaf_size",  param_leafSize);
+	/// models
+	data_model inputModel;
+	data_model outputModel;
+	inputModel.loadFile(param_inputModel);
+	
+	if(!inputModel.loadFile(param_inputModel))
+	{
+		std::cout << "Error loading: " << param_inputModel << std::endl;
+		return -2;
+	}
+	std::cout << "Loaded: " << param_inputModel << " correctly.\n";
 
-  std::cout <<"pointclouds count to filter "<< cloud_ids.size() <<"\n";
-  for (int i=0; i < cloud_ids.size(); i++)
-  {
-	  //we take full path of pointcloud in input model ...
-	  boost::filesystem::path inputFn (inputModel.getFullPathOfPointcloud(cloud_ids[i]));
-	  // ... and get only filename for ouput
-	  std::string outputFn = (pathOfNewDataDirectory/(inputFn.filename())).string();
+	/// create new path for data
+	boost::filesystem::path pathinputXML(param_inputModel);
+	boost::filesystem::path pathouputXML(param_outputModel);
 
-	  pcl::PCLPointCloud2::Ptr inputCloud (new pcl::PCLPointCloud2());
-	  pcl::PCLPointCloud2::Ptr outputCloud (new pcl::PCLPointCloud2());
-	  std::cout <<"loading pointcloud :" << inputFn<<"\n";
-	  pcl::io::loadPCDFile(inputFn.string(), *inputCloud);
+	boost::filesystem::path pathOfNewDataDirectory = pathouputXML.parent_path();
+	std::string relativePathToData = "data_subsampled_"+param_leaf_size;
+	pathOfNewDataDirectory/=relativePathToData;
 
-	  VoxelGrid<pcl::PCLPointCloud2> grid;
-	  grid.setInputCloud (inputCloud);
-	  grid.setLeafSize (leafSize, leafSize, leafSize);
+	/// create new directory for data
+	std::cout <<"creating directory with path :" << pathOfNewDataDirectory << std::endl;
+	if(!boost::filesystem::create_directories(pathOfNewDataDirectory))
+	{
+		std::cout<<"Could not create dir: "<< pathOfNewDataDirectory << std::endl;
+		return -3;
+	}
 
-	  pcl::StopWatch sw;
-	  sw.reset();
-	  grid.filter (*outputCloud);
-	  double exTime = sw.getTime();
-	  std::cout <<"saving pointcloud :" << outputFn<<"\n";
-	  pcl::io::savePCDFile(outputFn, *outputCloud);
-	  //rewrite some data from input model to ouput model -
-	  ///TODO copying
-	  Eigen::Matrix4f tr;
-	  inputModel.getAffine(cloud_ids[i], tr);
-	  outputModel.setAffine(cloud_ids[i], tr);
-	  outputModel.setPointcloudName(cloud_ids[i], inputFn.filename().string());
+	/// save relative path to model's data
+	outputModel.setDataSetPath(relativePathToData);
+	
+	/// loads clouds ids in input model
+	std::vector <std::string> cloud_ids;
+	inputModel.getAllScansId(cloud_ids);
+	
+	/// sets some info about algorithm
+	outputModel.setAlgorithmName("Voxel grid subsampling");
+	outputModel.addAlgorithmParam("leaf_size",  param_leaf_size);
+	
+	std::cout <<"pointclouds count: "<< cloud_ids.size() <<"\n";
+	
+	double totalTime=0;
+	
+	for (int i=0; i < cloud_ids.size(); i++)
+	{
+		//we take full path of pointcloud in input model ...
+		boost::filesystem::path inputFn (inputModel.getFullPathOfPointcloud(cloud_ids[i]));
+		// ... and get only filename for ouput
+		std::string outputFn = (pathOfNewDataDirectory/(inputFn.filename())).string();
 
-	  //save results
-	  outputModel.setResult(cloud_ids[i], "size_before_subsample",inputCloud->height*inputCloud->width);
-	  outputModel.setResult(cloud_ids[i], "size_after_subsample",outputCloud->height*outputCloud->width);
-	  outputModel.setResult(cloud_ids[i], "execution_time", exTime);
+		pcl::PCLPointCloud2::Ptr inputCloud (new pcl::PCLPointCloud2());
+		pcl::PCLPointCloud2::Ptr outputCloud (new pcl::PCLPointCloud2());
+		std::cout <<"loading pointcloud:" << inputFn<<"\n";
+		pcl::io::loadPCDFile(inputFn.string(), *inputCloud);
 
-  }
-  /// set new data repository path (relative to output model)
-  
-  outputModel.saveFile(param_outputModel);
+		VoxelGrid<pcl::PCLPointCloud2> grid;
+		grid.setInputCloud (inputCloud);
+		grid.setLeafSize (leaf_size, leaf_size, leaf_size);
+
+		pcl::StopWatch sw;
+		sw.reset();
+		grid.filter (*outputCloud);
+		double exTime = sw.getTime();
+
+		//Increase total computation time
+		totalTime+=exTime;
+
+		std::cout <<"saving pointcloud :" << outputFn<<"\n";
+		pcl::io::savePCDFile(outputFn, *outputCloud);
+
+		//rewrite some data from input model to ouput model -
+		///TODO copying
+		Eigen::Matrix4f tr;
+		inputModel.getAffine(cloud_ids[i], tr);
+		outputModel.setAffine(cloud_ids[i], tr);
+		outputModel.setPointcloudName(cloud_ids[i], inputFn.filename().string());
+
+		//save results
+		outputModel.setResult(cloud_ids[i], "size_before_subsample",inputCloud->height*inputCloud->width);
+		outputModel.setResult(cloud_ids[i], "size_after_subsample",outputCloud->height*outputCloud->width);
+		outputModel.setResult(cloud_ids[i], "execution_time", exTime);
+
+	}
+	outputModel.setResult("total_computation_time", totalTime);
+
+	outputModel.saveFile(param_outputModel);
 
 }

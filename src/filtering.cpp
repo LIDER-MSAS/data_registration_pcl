@@ -55,12 +55,13 @@ int main (int argc, char** argv)
 	ss << MeanK;
 	param_MeanK=ss.str();
 	
-	std::cout << "number of NN to use for mean distance estimation =" << param_MeanK << "\n";
+	std::cout << "number of NN to use for mean distance estimation = " << param_MeanK << "\n";
 	std::cout << "standard deviation multiplier = " << param_StddevMulThresh << "\n";
 
 	/// models
 	data_model inputModel;
 	data_model outputModel;
+
 	if(!inputModel.loadFile(param_inputModel))
 	{
 		std::cout << "Error loading: " << param_inputModel << std::endl;
@@ -71,7 +72,7 @@ int main (int argc, char** argv)
 	/// create new path for data
 	boost::filesystem::path pathinputXML(param_inputModel);
 	boost::filesystem::path pathouputXML(param_outputModel);
-	boost::filesystem::path pathOfNewDataDirectory = pathinputXML.parent_path();
+	boost::filesystem::path pathOfNewDataDirectory = pathouputXML.parent_path();
 
 	
 	//generate absolute path
@@ -80,7 +81,11 @@ int main (int argc, char** argv)
 
 	// create new directory for data
 	std::cout <<"creating directory with path :" << pathOfNewDataDirectory <<"\n";
-	boost::filesystem::create_directory(pathOfNewDataDirectory);
+	if(!boost::filesystem::create_directories(pathOfNewDataDirectory))
+	{
+		std::cout<<"Could not create dir: "<< pathOfNewDataDirectory << std::endl;
+		return -3;
+	}
 
 	// save relative path to model's data
 	outputModel.setDataSetPath(relativePathToData);
@@ -93,8 +98,8 @@ int main (int argc, char** argv)
 	outputModel.setAlgorithmName("Statistical Outlier Removal");
 	outputModel.addAlgorithmParam("MeanK",  param_MeanK);
 	outputModel.addAlgorithmParam("StddevMulThresh",  param_StddevMulThresh);
-
-	std::cout <<"pointclouds count to filter "<< cloud_ids.size() <<"\n";
+	
+	std::cout <<"pointclouds count: "<< cloud_ids.size() <<"\n";
 
 	double totalTime=0;
 
