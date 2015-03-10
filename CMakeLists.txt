@@ -34,6 +34,9 @@ target_link_libraries (subsampling ${PCL_LIBRARIES})
 add_executable (lum src/lum.cpp ${DATA_FRAMEWORK_SOURCES})
 target_link_libraries (lum ${PCL_LIBRARIES})
 
+add_executable (elch src/elch.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (elch ${PCL_LIBRARIES})
+
 add_executable (elch_viewer src/elch_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
 target_link_libraries (elch_viewer ${PCL_LIBRARIES})
 
