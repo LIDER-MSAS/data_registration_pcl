@@ -17,9 +17,6 @@ typedef Cloud::Ptr CloudPtr;
 typedef std::pair<std::string, CloudPtr> CloudPair;
 typedef std::vector<CloudPair> CloudVector;
 
-
-
-
 data_model model;
 data_model modelAfterElch;
 std::vector<std::string> cloudIds;
