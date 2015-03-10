@@ -60,6 +60,7 @@ double icp_RANSACOutlierRejectionThreshold = 0.15;
 int icp_MaximumIterations = 100;
 
 bool auto_reg = false;
+
 bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &scan, Eigen::Affine3f &metascanToScan, std::string cloudId)
 {
 	std::cout <<"invoking ICP on scan "<< cloudId<< " \n";

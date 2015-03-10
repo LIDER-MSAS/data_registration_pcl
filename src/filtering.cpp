@@ -11,94 +11,138 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-float       default_leaf_size = 0.01f;
-std::string default_field ("z");
-double      default_filter_min = -std::numeric_limits<double>::max ();
-double      default_filter_max = std::numeric_limits<double>::max ();
+int		MeanK=50;
+float	StddevMulThresh=1.0f;
 
 int main (int argc, char** argv)
 {
-  print_info ("Filtering a model using pcl::StatisticalOutlierRemoval \n USAGE: filtering MeanK StddevMulThresh input_model output_model\n");
-  
-  std::string param_MeanK = argv[1];
-  std::string param_StddevMulThresh = argv[2];
-  std::string param_inputModel = argv[3];
-  std::string param_outputModel = argv[4];
-  
-  int MeanK = boost::lexical_cast<int, std::string>(param_MeanK);
-  float StddevMulThresh = boost::lexical_cast<float, std::string>(param_StddevMulThresh);
-  /// models
-  data_model inputModel;
-  data_model outputModel;
-  inputModel.loadFile(param_inputModel);
+	std::cout << "Usage:\n";
+	std::cout << argv[0] << " input_model.xml output_model.xml parameters\n";
+	std::cout << " -k <number>\t\tSet the number of nearest neighbors to use for mean distance estimation. Default: " << MeanK << std::endl;
+	std::cout << " -s <multiplier>\tSet the standard deviation multiplier for the distance threshold calculation. Default: " << StddevMulThresh << std::endl;
 
-  /// create new path for data
-  boost::filesystem::path pathinputXML(param_inputModel);
-  boost::filesystem::path pathouputXML(param_outputModel);
+	if(argc<3)
+	{
+		return -1;
+	}
 
-  boost::filesystem::path pathOfNewDataDirectory = pathinputXML.parent_path();
-  std::string relativePathToData = "data_filtered_"+param_MeanK+"_"+param_StddevMulThresh;
-  pathOfNewDataDirectory/=relativePathToData;
+	std::string param_inputModel = argv[1];
+	std::string param_outputModel = argv[2];
+	std::string param_MeanK;
+	std::string param_StddevMulThresh;
+	
 
-  /// create new directory for data
-  std::cout <<"creating directory with path :" << pathOfNewDataDirectory <<"\n";
-  boost::filesystem::create_directory(pathOfNewDataDirectory);
+	int _k;
+	float _s;
+	if(pcl::console::parse_argument (argc, argv, "-k", _k)!=-1)
+	{
+		MeanK=_k;
+	}
+	if(pcl::console::parse_argument (argc, argv, "-s", _s)!=-1)
+	{
+		StddevMulThresh=_s;
+	}
 
-  /// save relative path to model's data
-  outputModel.setDataSetPath(relativePathToData);
-  
-  /// loads clouds ids in input model
-  std::vector <std::string> cloud_ids;
-  inputModel.getAllScansId(cloud_ids);
+	//Generate text from values of parameters
+	std::ostringstream ss;
+    ss << std::fixed << std::setprecision(3);
+	ss << StddevMulThresh;
+	param_StddevMulThresh=ss.str();
+	//Reset the string to be empty
+	ss.str("");
+	//clear any error flags that may be set
+	ss.clear();
+	ss << MeanK;
+	param_MeanK=ss.str();
+	
+	std::cout << "number of NN to use for mean distance estimation =" << param_MeanK << "\n";
+	std::cout << "standard deviation multiplier = " << param_StddevMulThresh << "\n";
 
-  /// sets some info about algorithm
-  outputModel.setAlgorithmName("Statistical Outlier Removal");
-  outputModel.addAlgorithmParam("MeanK",  param_MeanK);
-  outputModel.addAlgorithmParam("StddevMulThresh",  param_StddevMulThresh);
+	/// models
+	data_model inputModel;
+	data_model outputModel;
+	if(!inputModel.loadFile(param_inputModel))
+	{
+		std::cout << "Error loading: " << param_inputModel << std::endl;
+		return -2;
+	}
+	std::cout << "Loaded: " << param_inputModel << " correctly.\n";
 
-  std::cout <<"pointclouds count to filter "<< cloud_ids.size() <<"\n";
+	/// create new path for data
+	boost::filesystem::path pathinputXML(param_inputModel);
+	boost::filesystem::path pathouputXML(param_outputModel);
+	boost::filesystem::path pathOfNewDataDirectory = pathinputXML.parent_path();
 
-  for (int i=0; i < cloud_ids.size(); i++)
-  {
-	  //we take full path of pointcloud in input model ...
-	  boost::filesystem::path inputFn (inputModel.getFullPathOfPointcloud(cloud_ids[i]));
-	  // ... and get only filename for ouput
-	  std::string outputFn = (pathOfNewDataDirectory/(inputFn.filename())).string();
+	
+	//generate absolute path
+	std::string relativePathToData = "data_filtered_" + param_MeanK + "_" + param_StddevMulThresh;
+	pathOfNewDataDirectory/=relativePathToData;
 
-	  pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ>());
-	  pcl::PointCloud<pcl::PointXYZ>::Ptr outputCloud (new pcl::PointCloud<pcl::PointXYZ>());
-	  std::cout <<"loading pointcloud :" << inputFn<<"\n";
-	  pcl::io::loadPCDFile(inputFn.string(), *inputCloud);
+	// create new directory for data
+	std::cout <<"creating directory with path :" << pathOfNewDataDirectory <<"\n";
+	boost::filesystem::create_directory(pathOfNewDataDirectory);
 
-	  // Create the filtering object
-	  pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
-	  sor.setInputCloud (inputCloud);
-	  sor.setMeanK (MeanK);
-	  sor.setStddevMulThresh (StddevMulThresh);
+	// save relative path to model's data
+	outputModel.setDataSetPath(relativePathToData);
 
-	  pcl::StopWatch sw;
-	  sw.reset();
-	  sor.filter (*outputCloud);
-	  double exTime = sw.getTime();
+	// loads clouds ids in input model
+	std::vector <std::string> cloud_ids;
+	inputModel.getAllScansId(cloud_ids);
 
-	  std::cout <<"saving pointcloud :" << outputFn<<"\n";
-	  pcl::io::savePCDFile(outputFn, *outputCloud);
+	// sets some info about algorithm
+	outputModel.setAlgorithmName("Statistical Outlier Removal");
+	outputModel.addAlgorithmParam("MeanK",  param_MeanK);
+	outputModel.addAlgorithmParam("StddevMulThresh",  param_StddevMulThresh);
 
-	  //rewrite some data from input model to ouput model -
-	  ///TODO copying
-	  Eigen::Matrix4f tr;
-	  inputModel.getAffine(cloud_ids[i], tr);
-	  outputModel.setAffine(cloud_ids[i], tr);
-	  outputModel.setPointcloudName(cloud_ids[i], inputFn.filename().string());
+	std::cout <<"pointclouds count to filter "<< cloud_ids.size() <<"\n";
 
-	  //save results
-	  outputModel.setResult(cloud_ids[i], "size_before_filtering",inputCloud->height*inputCloud->width);
-	  outputModel.setResult(cloud_ids[i], "size_after_filtering",outputCloud->height*outputCloud->width);
-	  outputModel.setResult(cloud_ids[i], "execution_time", exTime);
+	double totalTime=0;
 
-  }
-  /// set new data repository path (relative to output model)
-  
-  outputModel.saveFile(param_outputModel);
+	for (int i=0; i < cloud_ids.size(); i++)
+	{
+		//we take full path of pointcloud in input model ...
+		boost::filesystem::path inputFn (inputModel.getFullPathOfPointcloud(cloud_ids[i]));
+		// ... and get only filename for ouput
+		std::string outputFn = (pathOfNewDataDirectory/(inputFn.filename())).string();
+
+		pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ>());
+		pcl::PointCloud<pcl::PointXYZ>::Ptr outputCloud (new pcl::PointCloud<pcl::PointXYZ>());
+		std::cout <<"loading pointcloud:" << inputFn<<"\n";
+		pcl::io::loadPCDFile(inputFn.string(), *inputCloud);
+
+		// Create the filtering object
+		pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+		sor.setInputCloud (inputCloud);
+		sor.setMeanK (MeanK);
+		sor.setStddevMulThresh (StddevMulThresh);
+
+		//Measure the computation time
+		pcl::StopWatch sw;
+		sw.reset();
+		sor.filter (*outputCloud);
+		double exTime = sw.getTime();
+
+		//Increase total computation time
+		totalTime+=exTime;
+
+		std::cout <<"saving pointcloud :" << outputFn<<"\n";
+		pcl::io::savePCDFile(outputFn, *outputCloud);
+
+		//rewrite some data from input model to ouput model -
+		///TODO copying
+		Eigen::Matrix4f tr;
+		inputModel.getAffine(cloud_ids[i], tr);
+		outputModel.setAffine(cloud_ids[i], tr);
+		outputModel.setPointcloudName(cloud_ids[i], inputFn.filename().string());
+
+		//save results
+		outputModel.setResult(cloud_ids[i], "size_before_filtering",inputCloud->height*inputCloud->width);
+		outputModel.setResult(cloud_ids[i], "size_after_filtering",outputCloud->height*outputCloud->width);
+		outputModel.setResult(cloud_ids[i], "computation_time", exTime);
+
+	}
+	outputModel.setResult("total_computation_time", totalTime);
+
+	outputModel.saveFile(param_outputModel);
 
 }

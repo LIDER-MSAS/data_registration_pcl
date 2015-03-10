@@ -39,7 +39,8 @@ public:
 	
 	void addAlgorithmParam(std::string paramName, float paramValue);
 	void addAlgorithmParam(std::string paramName, std::string paramValue);
-
+	
+	void setResult(std::string resultName, float result);
 	void setResult(std::string scanId, std::string resultName, float result);
 	void setResult(std::string scanId, std::string resultName, std::string result);
 

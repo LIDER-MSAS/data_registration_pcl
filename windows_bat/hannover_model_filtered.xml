@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Model>
+ <DatasetPath>data_filtered_60_2.000</DatasetPath>
+ <Algorithms>
+  <name>Statistical Outlier Removal</name>
+  <params>
+   <MeanK>60</MeanK>
+   <StddevMulThresh>2.000</StddevMulThresh>
+  </params>
+  <results>
+   <scan000>
+    <size_before_filtering>29526</size_before_filtering>
+    <size_after_filtering>28180</size_after_filtering>
+    <computation_time>225</computation_time>
+   </scan000>
+   <scan001>
+    <size_before_filtering>29142</size_before_filtering>
+    <size_after_filtering>27769</size_after_filtering>
+    <computation_time>227</computation_time>
+   </scan001>
+   <scan002>
+    <size_before_filtering>29180</size_before_filtering>
+    <size_after_filtering>27843</size_after_filtering>
+    <computation_time>220</computation_time>
+   </scan002>
+   <scan003>
+    <size_before_filtering>29158</size_before_filtering>
+    <size_after_filtering>27807</size_after_filtering>
+    <computation_time>224</computation_time>
+   </scan003>
+   <scan004>
+    <size_before_filtering>29508</size_before_filtering>
+    <size_after_filtering>28153</size_after_filtering>
+    <computation_time>218</computation_time>
+   </scan004>
+   <scan005>
+    <size_before_filtering>28996</size_before_filtering>
+    <size_after_filtering>27648</size_after_filtering>
+    <computation_time>216</computation_time>
+   </scan005>
+   <scan006>
+    <size_before_filtering>29354</size_before_filtering>
+    <size_after_filtering>27987</size_after_filtering>
+    <computation_time>227</computation_time>
+   </scan006>
+   <scan007>
+    <size_before_filtering>29161</size_before_filtering>
+    <size_after_filtering>27747</size_after_filtering>
+    <computation_time>222</computation_time>
+   </scan007>
+   <scan008>
+    <size_before_filtering>29504</size_before_filtering>
+    <size_after_filtering>28153</size_after_filtering>
+    <computation_time>221</computation_time>
+   </scan008>
+   <scan009>
+    <size_before_filtering>28819</size_before_filtering>
+    <size_after_filtering>27456</size_after_filtering>
+    <computation_time>219</computation_time>
+   </scan009>
+   <scan010>
+    <size_before_filtering>29509</size_before_filtering>
+    <size_after_filtering>28150</size_after_filtering>
+    <computation_time>216</computation_time>
+   </scan010>
+   <total_computation_time>2435</total_computation_time>
+  </results>
+ </Algorithms>
+ <Transformations>
+  <scan000>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan000.pcd</cloudname>
+  </scan000>
+  <scan001>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan001.pcd</cloudname>
+  </scan001>
+  <scan002>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan002.pcd</cloudname>
+  </scan002>
+  <scan003>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan003.pcd</cloudname>
+  </scan003>
+  <scan004>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan004.pcd</cloudname>
+  </scan004>
+  <scan005>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan005.pcd</cloudname>
+  </scan005>
+  <scan006>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan006.pcd</cloudname>
+  </scan006>
+  <scan007>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan007.pcd</cloudname>
+  </scan007>
+  <scan008>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan008.pcd</cloudname>
+  </scan008>
+  <scan009>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan009.pcd</cloudname>
+  </scan009>
+  <scan010>
+   <Affine>
+    <Type>matrix4f</Type>
+    <Data>-1 0 8.74228e-008 0 0 1 0 0 -8.74228e-008 0 -1 0 0 0 0 1 </Data>
+   </Affine>
+   <cloudname>scan010.pcd</cloudname>
+  </scan010>
+ </Transformations>
+</Model>

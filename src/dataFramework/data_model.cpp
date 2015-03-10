@@ -1,17 +1,28 @@
 #include "data_model.hpp"
 #include <boost/property_tree/detail/xml_parser_writer_settings.hpp>
-#include <boost/foreach.hpp>	
+#include <boost/foreach.hpp>
+#include <fstream>
 
 	bool data_model::loadFile(std::string fn)
 	{
-
 		pt_.clear();
-		bool ret = false;
+
 		xmlPath = boost::filesystem::path(fn);
-		boost::property_tree::read_xml(fn, pt_);
-		
-		ret = true;
-		return ret;
+
+		//check if the name is valid
+		std::ifstream f;
+		f.open(fn);
+		if(f.good())
+		{
+			f.close();
+			boost::property_tree::read_xml(fn, pt_);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
 	}
 
 	bool data_model::saveFile(std::string fn)
@@ -32,11 +43,13 @@
 		if (type.compare("matrix4f")==0)
 		{
 			std::stringstream ss (data);
+			//column major order
 			ss>>matrix(0,0)>>matrix(1,0)>>matrix(2,0)>>matrix(3,0);
 			ss>>matrix(0,1)>>matrix(1,1)>>matrix(2,1)>>matrix(3,1);
 			ss>>matrix(0,2)>>matrix(1,2)>>matrix(2,2)>>matrix(3,2);
 			ss>>matrix(0,3)>>matrix(1,3)>>matrix(2,3)>>matrix(3,3);
 
+			//row major order
 			//ss>>matrix(0,0)>>matrix(0,1)>>matrix(0,2)>>matrix(0,3);
 			//ss>>matrix(1,0)>>matrix(1,1)>>matrix(1,2)>>matrix(1,3);
 			//ss>>matrix(2,0)>>matrix(2,1)>>matrix(2,2)>>matrix(2,3);
@@ -197,11 +210,17 @@
 	{
 		pt_.put("Model.Algorithms.params."+paramName, paramValue);
 	}
+	
+	void data_model::setResult(std::string resultName, float result)
+	{
+		pt_.put<float>("Model.Algorithms.results."+resultName, result);
+	}
 
 	void data_model::setResult(std::string scanId, std::string resultName, float result)
 	{
 		pt_.put<float>("Model.Algorithms.results."+scanId+"."+resultName, result);
 	}
+
 	void setResult(std::string scanId, std::string resultName, std::string result);
 
 	
