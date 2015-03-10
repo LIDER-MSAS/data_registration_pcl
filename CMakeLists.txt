@@ -28,6 +28,18 @@ target_link_libraries (icp ${PCL_LIBRARIES})
 add_executable (ndt src/ndt.cpp src/dataFramework/viewerLog.cpp ${DATA_FRAMEWORK_SOURCES})
 target_link_libraries (ndt ${PCL_LIBRARIES})
 
+add_executable (lum src/lum.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (lum ${PCL_LIBRARIES})
+
+add_executable (elch_viewer src/elch_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (elch_viewer ${PCL_LIBRARIES})
+
+add_executable (lum_viewer src/lum_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (lum_viewer ${PCL_LIBRARIES})
+
+
+
+
 
 
 

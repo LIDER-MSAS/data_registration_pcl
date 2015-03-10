@@ -60,7 +60,7 @@ float ndt_res =1.0f;
 float ndt_step_size = 0.1f;
 float ndt_trans_eps = 0.01f;
 
-bool auto_reg = true;
+bool auto_reg = false;
 
 bool registerNDT(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &scan, Eigen::Affine3f &metascanToScan, std::string cloudId)
 {
