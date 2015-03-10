@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+
+project(data_registration_pcl)
+
+find_package(PCL 1.5 REQUIRED)
+
+include_directories(${PCL_INCLUDE_DIRS} include)
+include_directories(${PCL_INCLUDE_DIRS} include/dataFramework)
+
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
+
+SET(DATA_FRAMEWORK_SOURCES src/dataFramework/data_model.cpp)
+
+add_executable (model_viewer src/model_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (model_viewer ${PCL_LIBRARIES})
+
+add_executable (trajectory_viewer src/trajectory_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (trajectory_viewer ${PCL_LIBRARIES})
+
+add_executable (filtering src/filtering.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (filtering ${PCL_LIBRARIES})
+
+
+
