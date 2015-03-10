@@ -22,5 +22,15 @@ target_link_libraries (trajectory_viewer ${PCL_LIBRARIES})
 add_executable (filtering src/filtering.cpp ${DATA_FRAMEWORK_SOURCES})
 target_link_libraries (filtering ${PCL_LIBRARIES})
 
+add_executable (icp src/icp.cpp src/dataFramework/viewerLog.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (icp ${PCL_LIBRARIES})
+
+add_executable (ndt src/ndt.cpp src/dataFramework/viewerLog.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (ndt ${PCL_LIBRARIES})
+
+
+
+
+
 
 
