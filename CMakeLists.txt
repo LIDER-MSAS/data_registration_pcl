@@ -58,7 +58,11 @@ target_link_libraries (histogram_error_viewer ${PCL_LIBRARIES})
 add_executable (ortho_viewer src/ortho_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
 target_link_libraries (ortho_viewer ${PCL_LIBRARIES})
 
+add_executable (nn_overlap_plot src/nn_overlap_plot.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (nn_overlap_plot ${PCL_LIBRARIES})
 
+add_executable (result_plot src/result_plot.cpp ${DATA_FRAMEWORK_SOURCES})
+target_link_libraries (result_plot ${PCL_LIBRARIES})
 
 
 

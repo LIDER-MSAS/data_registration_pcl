@@ -221,7 +221,6 @@
 		pt_.put<float>("Model.Algorithms.results."+scanId+"."+resultName, result);
 	}
 
-	void setResult(std::string scanId, std::string resultName, std::string result);
 
 	
 	void data_model::setDataSetPath(std::string path)
@@ -252,3 +251,9 @@
 	}
 	//void data_model::setAffine (std::string scanId, Eigen::Vec3f &origin, Eigen::Vec3f &quat);
 	//void data_model::setPointcloudName (std::string scanId, std::string &fn);
+
+	void data_model::getResult(std::string scanId, std::string resultName, float &result)
+	{
+		result = pt_.get<float>("Model.Algorithms.results."+scanId+"."+resultName);
+	}
+	

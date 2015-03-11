@@ -23,6 +23,8 @@ public:
 	
 	std::string getFullPathOfPointcloud(std::string id);
 
+
+
 	void setDataSetPath(std::string path);
 	void getDataSetPath(std::string &path);
 	/// retrieve all scans in file 
@@ -43,6 +45,7 @@ public:
 	void setResult(std::string resultName, float result);
 	void setResult(std::string scanId, std::string resultName, float result);
 	void setResult(std::string scanId, std::string resultName, std::string result);
+	void getResult(std::string scanId, std::string resultName, float &result);
 
 
 private:
