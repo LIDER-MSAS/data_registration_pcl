@@ -23,6 +23,15 @@
 #include "dataFramework\viewerLog.hpp"
 #include <pcl/common/time.h>
 
+template <typename PointSource, typename PointTarget, typename Scalar = float> class myIcp : public  pcl::IterativeClosestPoint <PointSource, PointTarget, Scalar >
+{
+public:
+	pcl::CorrespondencesPtr getCorrespondeces()
+	{
+		return correspondences_;
+	}
+};
+
 
 using pcl::visualization::PointCloudColorHandlerGenericField;
 using pcl::visualization::PointCloudColorHandlerCustom;
@@ -38,8 +47,8 @@ std::vector<std::string> indices;
 
 pcl::PointCloud<PointT> metascan;
 std::vector<std::string> pcNames;
-pcl::visualization::PCLVisualizer p;
-logViewer* logger;
+//pcl::visualization::PCLVisualizer p;
+//logViewer* logger;
 Eigen::Affine3f lastGlobalOdom;
 Eigen::Affine3f lastFit;
 Eigen::Affine3f currentFitCandidate;
@@ -54,19 +63,18 @@ pcl::PointCloud<PointT>::Ptr currentlyRegisteredPc;
 bool registration_accepted = false;
 std::vector<std::string> msg;
 bool isUseMetascan = false;
-
+float  cummulativeTime =0;
 double icp_CorrespondenceDistance = 0.15;
 double icp_RANSACOutlierRejectionThreshold = 0.15;
 int icp_MaximumIterations = 100;
 
-bool auto_reg = false;
 
 bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &scan, Eigen::Affine3f &metascanToScan, std::string cloudId)
 {
 	std::cout <<"invoking ICP on scan "<< cloudId<< " \n";
 
-	pcl::IterativeClosestPoint<PointT, PointT> *icp;
-	icp = new pcl::IterativeClosestPoint<PointT, PointT>();
+	myIcp<PointT, PointT> *icp;
+	icp = new myIcp<PointT, PointT>();
 
 	icp->setMaximumIterations (icp_MaximumIterations);
 	icp->setMaxCorrespondenceDistance (icp_CorrespondenceDistance);
@@ -82,8 +90,19 @@ bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	float executionTime = sw.getTime();
 	std::cout << icp->getFinalTransformation () << std::endl;
 	metascanToScan = icp->getFinalTransformation();
+
+	if (scan.size() != 0)
+	{
+		float overlap = 100.0f *  icp->getCorrespondeces()->size()/scan.size();
+		outputXML.setResult(cloudId, "overlap", overlap);
+
+	}
 	outputXML.setResult(cloudId, "FitnessScore", icp->getFitnessScore());
+	printf("FitnessScore: %f\n", icp->getFitnessScore());
 	outputXML.setResult(cloudId, "AlignTime", executionTime);
+	cummulativeTime += executionTime;
+	outputXML.setResult(cloudId, "CummulativeAlignTime", cummulativeTime);
+return true; 
 }
 
 void loadNextPc()
@@ -112,7 +131,7 @@ void loadNextPc()
 		std::cout<< odometryIncrement.matrix()<<"\n";
 		currentInitialFit = lastFit * odometryIncrement ; 
 		pcl::transformPointCloud(*currentlyRegisteredPc,*currentlyRegisteredPc,currentInitialFit );
-		logger->addMessage("loaded pointcloud , press r to register");
+
 	}
 	else
 	{
@@ -120,27 +139,41 @@ void loadNextPc()
 
 	}
 }
+
+
+typedef pcl::PointXYZ PointType;
+
 void registerScan()
 {
 	Eigen::Affine3f tr;
 	registration_accepted = false;
-	//bool res = registerNDT(metascan, *currentlyRegisteredPc, tr);
+
 	bool res;
+
+	printf("trying register...\n");
+
 
 	res= registerICP(metascan, *currentlyRegisteredPc, tr, indices[currentPointcloud]);
 
+
+	printf("metascan.size(): %d   currentlyRegisteredPc->size():%d \n", metascan.size(), currentlyRegisteredPc->size() );
+
 	if (res)
 	{
+		printf("registration ok\n");
 		pcl::transformPointCloud(*currentlyRegisteredPc,*currentlyRegisteredPc, tr);
 		currentFitCandidate =   tr * currentInitialFit;
-		logger->addMessage("registration OK, press a to accept");
+
 	}
 	else
 	{
-		std::cout <<"registration failed\n";
-		logger->addMessage("registration NOT ok, l to load next scan, or r for next iterations of registration");
+		printf("registration NOK %s \n", (indices[currentPointcloud]).c_str() ); //tu by sie przydala nazwa skanu
+
+	
 	}
 }
+
+
 void accept()
 {
 	registration_accepted = true;
@@ -155,7 +188,7 @@ void accept()
 	}
 	lastGlobalOdom = currentlyAssignedGlobalOdom;
 	lastFit = currentFitCandidate;
-	logger->addMessage("registration accepted");
+	//logger->addMessage("registration accepted");
 	outputXML.setAffine(indices[currentPointcloud], lastFit.matrix());
 	std::string cloud_fn;
 	inputXML.getPointcloudName(indices[currentPointcloud] ,cloud_fn);
@@ -163,38 +196,11 @@ void accept()
 	std::cout <<"saving model to " << outputXMLFn<<"\n";
 	outputXML.saveFile(outputXMLFn);
 }
-void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void* viewer_void)
-{
-	if (event.getKeySym()=="l" && event.keyUp())
-	{
-		loadNextPc();
-	}
-	if (event.getKeySym()=="r" && event.keyUp())
-	{
-		registerScan();
-	}
-	if (event.getKeySym()=="a" && event.keyUp())
-	{
-		accept();		
-	}
-	if (event.getKeySym()=="q"&& event.keyUp())
-	{
-		loadNextPc();
-		registerScan();
-		accept();		
-	}
 
-	p.removeAllPointClouds();
-	pcl::visualization::PointCloudColorHandlerCustom<PointT> metascanH(metascan.makeShared(), 0, 0, 255);
-	p.addPointCloud<PointT> (metascan.makeShared(),metascanH,"metascan" );
 
-	pcl::visualization::PointCloudColorHandlerCustom<PointT> scanH(currentlyRegisteredPc, 255, 0, 0);
-	p.addPointCloud<PointT> (currentlyRegisteredPc,scanH, "scan");
-}
 
 int main (int argc, char** argv)
 {
-	logger =new logViewer(&p,25);
 
 	std::cout <<"USAGE:\n";
 	std::cout <<argv[0]<<" parameters inputModel.xml outputModel.xml\n";
@@ -205,12 +211,9 @@ int main (int argc, char** argv)
 	std::cout <<" -u shows 3d viewer for semi-automatic registration\n";
 
 	pcl::console::parse_argument (argc, argv, "-d", icp_CorrespondenceDistance);
-
 	pcl::console::parse_argument (argc, argv, "-r", icp_RANSACOutlierRejectionThreshold);
-
 	pcl::console::parse_argument (argc, argv, "-i", icp_MaximumIterations);
 	pcl::console::parse_argument (argc, argv, "-m", isUseMetascan);
-	pcl::console::parse_argument (argc, argv, "-u", auto_reg);
 	
 
 
@@ -237,12 +240,15 @@ int main (int argc, char** argv)
 	outputXML.addAlgorithmParam("icp_RANSACOutlierRejectionThreshold",icp_RANSACOutlierRejectionThreshold);
 	outputXML.addAlgorithmParam("icp_MaximumIterations",icp_MaximumIterations);
 	outputXML.addAlgorithmParam("isUseMetascan",isUseMetascan);
-	outputXML.addAlgorithmParam("auto_reg",auto_reg);
 
 
 	std::string dataPath;
 	inputXML.getDataSetPath(dataPath);
 	outputXML.setDataSetPath(dataPath);
+
+
+	//add first scan to result;
+
 
 
 	pcl::PointCloud<PointT> tmp;
@@ -260,18 +266,19 @@ int main (int argc, char** argv)
 	metascan.sensor_orientation_ = Eigen::Quaternionf::Identity();
 
 
-	p.registerKeyboardCallback (keyboardEventOccurred, (void*)&p);
-	if (auto_reg)
+	outputXML.setResult(indices[0], "overlap", 0.0f);
+	outputXML.setResult(indices[0], "FitnessScore", 0.0f);
+	outputXML.setResult(indices[0], "AlignTime", 0.0f);
+	outputXML.setResult(indices[0], "CummulativeAlignTime", 0.0f);
+	outputXML.setAffine(indices[0], lastGlobalOdom.matrix());
+	
+	for (int i=0; i<indices.size()-1; i++)
 	{
-		//p.close();
-		for (int i=0; i<indices.size()-1; i++)
-		{
-			loadNextPc();
-			registerScan();
-			accept();	
-		}
+		loadNextPc();
+		registerScan();
+		accept();	
 	}
+	
 
-	if (!auto_reg) p.spin();
 }
 /* ]--- */
