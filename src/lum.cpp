@@ -117,7 +117,6 @@ int main (int argc, char **argv)
 				std::cout << "add connection between " << i << " (" << cloudIds[i] << ") and " << j << " (" << cloudIds[j] << ")" << std::endl;
 			  }
 			}
-
 		}
 	}
 
