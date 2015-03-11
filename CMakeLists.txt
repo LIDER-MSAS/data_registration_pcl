@@ -68,4 +68,3 @@ add_executable (get_scan_name src/get_scan_name.cpp ${DATA_FRAMEWORK_SOURCES})
 target_link_libraries (get_scan_name ${PCL_LIBRARIES})
 
 
-
