@@ -57,8 +57,3 @@ target_link_libraries (histogram_error_viewer ${PCL_LIBRARIES})
 
 add_executable (ortho_viewer src/ortho_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
 target_link_libraries (ortho_viewer ${PCL_LIBRARIES})
-
-
-
-
-
