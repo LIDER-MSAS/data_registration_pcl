@@ -130,9 +130,10 @@ int main (int argc, char** argv)
 		outputModel.setResult(cloud_ids[i], "size_before_subsample",inputCloud->height*inputCloud->width);
 		outputModel.setResult(cloud_ids[i], "size_after_subsample",outputCloud->height*outputCloud->width);
 		outputModel.setResult(cloud_ids[i], "execution_time", exTime);
+		outputModel.setResult(cloud_ids[i], "cummulative_filter_time", totalTime);
 
 	}
-	outputModel.setResult("total_computation_time", totalTime);
+
 
 	outputModel.saveFile(param_outputModel);
 

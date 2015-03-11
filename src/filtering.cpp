@@ -42,7 +42,7 @@ int main (int argc, char** argv)
 	{
 		StddevMulThresh=_s;
 	}
-
+	
 	//Generate text from values of parameters
 	std::ostringstream ss;
     ss << std::fixed << std::setprecision(3);
@@ -144,9 +144,10 @@ int main (int argc, char** argv)
 		outputModel.setResult(cloud_ids[i], "size_before_filtering",inputCloud->height*inputCloud->width);
 		outputModel.setResult(cloud_ids[i], "size_after_filtering",outputCloud->height*outputCloud->width);
 		outputModel.setResult(cloud_ids[i], "computation_time", exTime);
+		outputModel.setResult(cloud_ids[i], "cummulative_filter_time", totalTime);
 
 	}
-	outputModel.setResult("total_computation_time", totalTime);
+	
 
 	outputModel.saveFile(param_outputModel);
 
