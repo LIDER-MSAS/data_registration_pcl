@@ -247,6 +247,10 @@ int main (int argc, char** argv)
 	outputXML.setDataSetPath(dataPath);
 
 
+	//add first scan to result;
+
+
+
 	pcl::PointCloud<PointT> tmp;
 	
 	lastGlobalOdom.setIdentity();
@@ -261,6 +265,12 @@ int main (int argc, char** argv)
 	metascan.sensor_origin_ = Eigen::Vector4f(0,0,0,0);
 	metascan.sensor_orientation_ = Eigen::Quaternionf::Identity();
 
+
+	outputXML.setResult(indices[0], "overlap", 0.0f);
+	outputXML.setResult(indices[0], "FitnessScore", 0.0f);
+	outputXML.setResult(indices[0], "AlignTime", 0.0f);
+	outputXML.setResult(indices[0], "CummulativeAlignTime", 0.0f);
+	outputXML.setAffine(indices[0], lastGlobalOdom.matrix());
 	
 	for (int i=0; i<indices.size()-1; i++)
 	{

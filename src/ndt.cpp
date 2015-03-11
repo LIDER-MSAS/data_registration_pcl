@@ -59,7 +59,7 @@ int ndt_iter = 100;
 float ndt_res =1.0f;
 float ndt_step_size = 0.1f;
 float ndt_trans_eps = 0.01f;
-
+float cumulative_align_time = 0.0f;
 bool auto_reg = false;
 
 bool registerNDT(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &scan, Eigen::Affine3f &metascanToScan, std::string cloudId)
@@ -83,7 +83,10 @@ bool registerNDT(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	std::cout << ndt->getFinalTransformation () << std::endl;
 	metascanToScan = ndt->getFinalTransformation();
 	outputXML.setResult(cloudId, "FitnessScore", ndt->getFitnessScore());
+	cumulative_align_time +=executionTime;
 	outputXML.setResult(cloudId, "AlignTime", executionTime);
+	outputXML.setResult(cloudId, "CummulativeAlignTime", cumulative_align_time);
+
 }
 void loadNextPc()
 {
@@ -265,6 +268,10 @@ int main (int argc, char** argv)
 	metascan.sensor_origin_ = Eigen::Vector4f(0,0,0,0);
 	metascan.sensor_orientation_ = Eigen::Quaternionf::Identity();
 
+	outputXML.setResult(indices[0], "FitnessScore", 0.0f);
+	outputXML.setResult(indices[0], "AlignTime", 0.0f);
+	outputXML.setResult(indices[0], "CummulativeAlignTime", 0.0f);
+	outputXML.setAffine(indices[0], lastGlobalOdom.matrix());
 
 	p.registerKeyboardCallback (keyboardEventOccurred, (void*)&p);
 	if (auto_reg)
