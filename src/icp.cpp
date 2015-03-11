@@ -85,7 +85,7 @@ bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	outputXML.setResult(cloudId, "FitnessScore", icp->getFitnessScore());
 	printf("FitnessScore: %f\n", icp->getFitnessScore());
 	outputXML.setResult(cloudId, "AlignTime", executionTime);
-
+	
 return true; // michal dlaczego tego nie bylo
 }
 
