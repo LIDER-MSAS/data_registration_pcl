@@ -39,7 +39,6 @@ int main (int argc, char **argv)
 		printf("-l lumIter\n");
 		printf("-c convergenceThreshold\n");
 		printf("-t threshold_diff_norm\n");
-		printf("-d threshold_distance_between_indexes\n");
 		printf("-r threshold_determine_correspondences\n");
 		printf("-o threshold_overlap\n");
 
@@ -50,23 +49,22 @@ int main (int argc, char **argv)
 	std::string output_file_name(argv[2]);
 
 	int lumIter = 100;
-	pcl::console::parse_argument (argc, argv, "-l", lumIter);
-
 	double convergenceThreshold = 0.0001;
-	pcl::console::parse_argument (argc, argv, "-c", convergenceThreshold);
-
 	double threshold_diff_norm = 3.0;
-	pcl::console::parse_argument (argc, argv, "-t", threshold_diff_norm);
-
-	int threshold_distance_between_indexes = 50;
-	pcl::console::parse_argument (argc, argv, "-d", threshold_distance_between_indexes);
-	
 	double threshold_determine_correspondences =1.5;
-	pcl::console::parse_argument (argc, argv, "-r", threshold_determine_correspondences);
-
 	double threshold_overlap = 0.3;
-	pcl::console::parse_argument (argc, argv, "-o", threshold_overlap);
 
+	pcl::console::parse_argument (argc, argv, "-l", lumIter);
+	pcl::console::parse_argument (argc, argv, "-c", convergenceThreshold);
+	pcl::console::parse_argument (argc, argv, "-t", threshold_diff_norm);
+	pcl::console::parse_argument (argc, argv, "-r", threshold_determine_correspondences);
+	pcl::console::parse_argument (argc, argv, "-o", threshold_overlap);
+	
+	std::cout << "threshold_diff_norm = " << threshold_diff_norm << std::endl;
+	std::cout << "threshold_determine_correspondences = " << threshold_determine_correspondences << std::endl;
+	std::cout << "threshold_overlap = " << threshold_overlap << std::endl;
+	std::cout << "lumIter = " << lumIter << std::endl;
+	std::cout << "convergenceThreshold = " << convergenceThreshold << std::endl;
 
 	model.loadFile(input_file_name);
 	pcl::registration::LUM<PointType> lum;
@@ -126,10 +124,7 @@ int main (int argc, char **argv)
 		}
 	}
 
-
 	lum.compute ();
-
-
 
 	for(size_t i = 0; i < lum.getNumVertices (); i++)
 	{
@@ -141,16 +136,8 @@ int main (int argc, char **argv)
 		Eigen::Affine3f final = tr * tr2;
 		modelAfterLum.setAffine(cloudIds[i], final.matrix());
 	}
+	
 	modelAfterLum.saveFile(output_file_name);
-
-	//printf("usage: graph_viewer input.xml output.xml -l 10 -c 0.001 -t 3.0 -d 50 -r 1.5 -o 0.3\n");
-	printf("-l lumIter %d\n", lumIter);
-	printf("-c convergenceThreshold %f\n", convergenceThreshold);
-	printf("-t threshold_diff_norm %f\n", threshold_diff_norm);
-	printf("-d threshold_distance_between_indexes %d\n", threshold_distance_between_indexes);
-	printf("-r threshold_determine_correspondences %f\n", threshold_determine_correspondences);
-	printf("-o threshold_overlap %f\n", threshold_overlap);
-
 
 	return 0;
 }

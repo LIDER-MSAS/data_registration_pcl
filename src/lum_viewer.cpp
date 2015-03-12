@@ -168,9 +168,9 @@ int main (int argc, char * argv [])
 	{
 		printf("usage: graph_viewer xxx.xml -t 3.0 -d 50 -c 1.5 -o 0.3\n");
 		printf("-t threshold_diff_norm\n");
-		printf("-d threshold_distance_between_indexes\n");
-		printf("-c threshold_determine_correspondences\n");
+		//printf("-c convergenceThreshold\n");
 		printf("-o threshold_overlap\n");
+		printf("-r threshold_determine_correspondences\n");
 
 		return -1;
 	}
@@ -179,17 +179,20 @@ int main (int argc, char * argv [])
     plotter->setShowLegend (true);
 
 	double threshold_diff_norm = 3.0;
-	pcl::console::parse_argument (argc, argv, "-t", threshold_diff_norm);
-
-	int threshold_distance_between_indexes = 50;
-	pcl::console::parse_argument (argc, argv, "-d", threshold_distance_between_indexes);
-	
+	//double convergenceThreshold = 0.0001;
 	double threshold_determine_correspondences =1.5;
-	pcl::console::parse_argument (argc, argv, "-c", threshold_determine_correspondences);
-
 	double threshold_overlap = 0.3;
+
+	pcl::console::parse_argument (argc, argv, "-t", threshold_diff_norm);
+	//pcl::console::parse_argument (argc, argv, "-c", convergenceThreshold);
+	pcl::console::parse_argument (argc, argv, "-r", threshold_determine_correspondences);
 	pcl::console::parse_argument (argc, argv, "-o", threshold_overlap);
 	
+	std::cout << "threshold_diff_norm = " << threshold_diff_norm << std::endl;
+	std::cout << "threshold_determine_correspondences = " << threshold_determine_correspondences << std::endl;
+	std::cout << "threshold_overlap = " << threshold_overlap << std::endl;
+	//std::cout << "convergenceThreshold = " << convergenceThreshold << std::endl;
+
 	model.loadFile(argv[1]);
 
 	pcl::registration::LUM<PointType> lum;
@@ -235,9 +238,8 @@ int main (int argc, char * argv [])
 			  if (corr->size () > (float(clouds[j]->size()) * threshold_overlap) )
 			  {
 				//lum.setCorrespondences (j, i, corr);
-				std::cout << "add connection between " << i << " (" << cloudIds[i] << ") and " << j << " (" << cloudIds[j] << ")" << std::endl;
+				std::cout << "Add connection between " << cloudIds[i] << " and " << cloudIds[j] << std::endl;
 
-				///////////dodajemy origines////////////
 				double x1 = origin1.x();
 				double y1 = origin1.y();
 				double x2 = origin2.x();
@@ -249,12 +251,6 @@ int main (int argc, char * argv [])
 
 		}
 	}
-
-
-	printf("-t threshold_diff_norm %f\n", threshold_diff_norm);
-	printf("-d threshold_distance_between_indexes %d\n", threshold_distance_between_indexes);
-	printf("-c threshold_determine_correspondences %f\n", threshold_determine_correspondences);
-	printf("-o threshold_overlap %f\n", threshold_overlap);
 
 	plotter->spin();
 	

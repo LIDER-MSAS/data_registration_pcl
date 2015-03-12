@@ -79,9 +79,13 @@ bool
 	return false;
 }
 
-int
-	main (int argc, char **argv)
+int main (int argc, char **argv)
 {
+	double maxCorrespondenceDistance = 0.1;
+	double RANSACOutlierRejectionThreshold = 0.1;
+	int maximumICPIterations = 100;
+	double loopdetectiondistance = 3.0;
+
 	if(argc < 3)
 	{
 		printf("usage: elch input.xml output.xml -d 0.1 -r 0.1 -i 100 -l 3.0\n");
@@ -100,16 +104,10 @@ int
 	std::string output_file_name(argv[2]);
 
 
-	double maxCorrespondenceDistance = 0.1;
+
 	pcl::console::parse_argument (argc, argv, "-d", maxCorrespondenceDistance);
-
-	double RANSACOutlierRejectionThreshold = 0.1;
 	pcl::console::parse_argument (argc, argv, "-r", RANSACOutlierRejectionThreshold);
-
-	int maximumICPIterations = 100;
 	pcl::console::parse_argument (argc, argv, "-i", maximumICPIterations);
-
-	double loopdetectiondistance = 3.0;
 	pcl::console::parse_argument (argc, argv, "-l", loopdetectiondistance);
 
 	pcl::registration::ELCH<PointType> elch;
