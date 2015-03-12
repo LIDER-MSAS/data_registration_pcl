@@ -72,11 +72,14 @@ int main (int argc, char** argv)
 	pathOfNewDataDirectory/=relativePathToData;
 
 	// create new directory for data
-	std::cout <<"creating directory with path :" << pathOfNewDataDirectory <<"\n";
+	std::cout <<"creating directory (if does not exist):" << pathOfNewDataDirectory <<"\n";
 	if(!boost::filesystem::create_directories(pathOfNewDataDirectory))
 	{
-		std::cout<<"Could not create dir: "<< pathOfNewDataDirectory << std::endl;
-		return -3;
+		if(!boost::filesystem::is_directory(pathOfNewDataDirectory))
+		{
+			std::cout<<"Could not create dir: "<< pathOfNewDataDirectory << std::endl;
+			return -3;
+		}
 	}
 
 	// save relative path to model's data

@@ -33,7 +33,7 @@ int main (int argc, char** argv)
 	std::string param_outputModel = argv[2];
 	std::string param_leaf_size;
 
-	if(pcl::console::parse_argument (argc, argv, "-l", leaf_size);
+	pcl::console::parse_argument (argc, argv, "-l", leaf_size);
 
 	//Generate text from values of parameters
 	std::ostringstream ss;
@@ -64,11 +64,14 @@ int main (int argc, char** argv)
 	pathOfNewDataDirectory/=relativePathToData;
 
 	/// create new directory for data
-	std::cout <<"creating directory with path :" << pathOfNewDataDirectory << std::endl;
+	std::cout <<"creating directory (if does not exist):" << pathOfNewDataDirectory << std::endl;
 	if(!boost::filesystem::create_directories(pathOfNewDataDirectory))
 	{
-		std::cout<<"Could not create dir: "<< pathOfNewDataDirectory << std::endl;
-		return -3;
+		if(!boost::filesystem::is_directory(pathOfNewDataDirectory))
+		{
+			std::cout<<"Could not create dir: "<< pathOfNewDataDirectory << std::endl;
+			return -3;
+		}
 	}
 
 	/// save relative path to model's data
