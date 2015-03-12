@@ -233,7 +233,7 @@ int main (int argc, char * argv [])
 	*pc2 = *pc;
 	cloudsBeforeELCH.push_back(pc2);
 	clouds.push_back (CloudPair (cloudIds[i], pc));
-    std::cout << "loading file: " << cloudIds[i] << " size: " << pc->size () << std::endl;
+    std::cout << "loading file: " << fn << " size: " << pc->size () << std::endl;
     elch.addPointCloud (clouds[i].second);
   }
 
