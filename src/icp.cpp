@@ -196,10 +196,13 @@ int main (int argc, char** argv)
 
 	std::cout << "USAGE:\n";
 	std::cout << argv[0] <<" parameters inputModel.xml outputModel.xml\n";
-	std::cout << " -d sets icp_CorrespondenceDistance\n";
-	std::cout << " -r sets icp_RANSACOutlierRejectionThreshold\n";
-	std::cout << " -i sets icp_MaximumIterations\n";
-	std::cout << " -m sets usage of metascan\n";
+	std::cout << " -d\tSets the maximum distance threshold between two correspondent points in source <-> target.\
+If the distance is larger than this threshold, the points will be ignored in the alignment process.\tDefault: " << icp_CorrespondenceDistance << std::endl;
+	std::cout << " -r\tSets the inlier distance threshold for the internal RANSAC outlier rejection loop.\
+The method considers a point to be an inlier, if the distance between the target data index and the \
+transformed source index is smaller than the given inlier distance threshold.\tDefault: " << icp_RANSACOutlierRejectionThreshold << std::endl;
+	std::cout << " -i\tSets the maximum number of iterations the internal optimization should run for.\tDefault: " << icp_MaximumIterations << std::endl;
+	std::cout << " -m\tSets the usage of metascan.\tDefault: " << isUseMetascan << std::endl;
 
 	pcl::console::parse_argument (argc, argv, "-d", icp_CorrespondenceDistance);
 	pcl::console::parse_argument (argc, argv, "-r", icp_RANSACOutlierRejectionThreshold);
