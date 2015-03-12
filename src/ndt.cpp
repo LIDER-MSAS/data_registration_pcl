@@ -158,11 +158,11 @@ int main (int argc, char** argv)
 
 	std::cout <<"USAGE:\n";
 	std::cout <<argv[0]<<" parameters inputModel.xml outputModel.xml\n";
-	std::cout <<" -r sets ndt grid resolution\n";
-	std::cout <<" -i sets ndt max iterations\n";
-	std::cout <<" -s sets ndt step size \n";
-	std::cout <<" -m sets usage of metascan\n";
-	std::cout <<" -u shows 3d viewer for semi-automatic registration\n";
+	std::cout <<" -r\tSets the voxel grid resolution.\tDefault: " << ndt_res << std::endl;
+	std::cout <<" -i\tSets the maximum number of iterations the internal optimization should run for.\tDefault: " << ndt_iter << std::endl;
+	std::cout <<" -t\tSets the transformation epsilon.\tDefault: " << ndt_trans_eps << std::endl;
+	std::cout <<" -s\tSets the newton line search maximum step length.\tDefault: " << ndt_step_size << std::endl;
+	std::cout <<" -m\tSets the usage of metascan.\tDefault:" << isUseMetascan << std::endl;
 
 
 	pcl::console::parse_argument (argc, argv, "-r", ndt_res);
