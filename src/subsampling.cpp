@@ -110,6 +110,8 @@ int main (int argc, char** argv)
 		grid.filter (*outputCloud);
 		double exTime = sw.getTime();
 
+		std::cout << "Size before: " << inputCloud->height*inputCloud->width << " Size after: "<<outputCloud->height*outputCloud->width << std::endl;
+
 		//Increase total computation time
 		totalTime+=exTime;
 

@@ -110,6 +110,7 @@ int main (int argc, char** argv)
 		std::cout <<"loading pointcloud:" << inputFn<<"\n";
 		pcl::io::loadPCDFile(inputFn.string(), *inputCloud);
 
+
 		// Create the filtering object
 		pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
 		sor.setInputCloud (inputCloud);
@@ -121,6 +122,8 @@ int main (int argc, char** argv)
 		sw.reset();
 		sor.filter (*outputCloud);
 		double exTime = sw.getTime();
+
+		std::cout << "Size before: " << inputCloud->size() << " Size after: "<<outputCloud->size() << std::endl;
 
 		//Increase total computation time
 		totalTime+=exTime;
