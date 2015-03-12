@@ -73,7 +73,10 @@ int main (int argc, char **argv)
 	lum.setMaxIterations (lumIter);
 	lum.setConvergenceThreshold (convergenceThreshold);
 
-
+	
+	std::string dataPath;
+	model.getDataSetPath(dataPath);
+	modelAfterLum.setDataSetPath(dataPath);
 
 	model.getAllScansId(cloudIds);
 	for (size_t i = 0; i < cloudIds.size (); i++)
@@ -84,6 +87,8 @@ int main (int argc, char **argv)
 		model.getPointcloudName(cloudIds[i], fn);
 		modelAfterLum.setPointcloudName(cloudIds[i], fn);
 		model.getAffine(cloudIds[i], tr);
+		
+		fn= model.getFullPathOfPointcloud(cloudIds[i]);
 
 		pcl::PointCloud<PointType>::Ptr pc (new pcl::PointCloud<PointType>);
 		pcl::io::loadPCDFile (fn, *pc);
