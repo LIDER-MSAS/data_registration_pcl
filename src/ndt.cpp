@@ -210,6 +210,8 @@ int main (int argc, char** argv)
 	lastFit.setIdentity();
 	std::string fn;
 	fn = inputXML.getFullPathOfPointcloud(indices[0]);
+	std::string pcdFileNameOnly;
+	inputXML.getPointcloudName(indices[0], pcdFileNameOnly); 
 	pcl::io::loadPCDFile(fn,tmp);
 	inputXML.getAffine(indices[0],lastGlobalOdom.matrix()),
 	pcl::transformPointCloud(tmp,tmp, lastGlobalOdom);
@@ -218,6 +220,7 @@ int main (int argc, char** argv)
 	metascan.sensor_origin_ = Eigen::Vector4f(0,0,0,0);
 	metascan.sensor_orientation_ = Eigen::Quaternionf::Identity();
 
+	outputXML.setPointcloudName(indices[0],pcdFileNameOnly);
 	outputXML.setResult(indices[0], "FitnessScore", 0.0f);
 	outputXML.setResult(indices[0], "AlignTime", 0.0f);
 	outputXML.setResult(indices[0], "CummulativeAlignTime", 0.0f);

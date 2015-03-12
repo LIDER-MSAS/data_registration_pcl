@@ -75,8 +75,8 @@ int main (int argc, char** argv)
 		TargetGlobalMatrix = Eigen::Affine3f::Identity();
 		modelSource.getGlobalModelMatrix(SourceGlobalMatrix.matrix());
 		modelTarget.getGlobalModelMatrix(TargetGlobalMatrix.matrix());	
-		pcl::transformPointCloud(metascanSource,metascanSource, SourceGlobalMatrix);
-		pcl::transformPointCloud(metascanTarget,metascanTarget, TargetGlobalMatrix);
+		pcl::transformPointCloudWithNormals(metascanSource,metascanSource, SourceGlobalMatrix);
+		pcl::transformPointCloudWithNormals(metascanTarget,metascanTarget, TargetGlobalMatrix);
 
 		// subsample data for final registration
 
