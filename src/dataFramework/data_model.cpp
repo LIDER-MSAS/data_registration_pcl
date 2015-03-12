@@ -256,4 +256,58 @@
 	{
 		result = pt_.get<float>("Model.Algorithms.results."+scanId+"."+resultName);
 	}
-	
+	void data_model::getGlobalModelMatrix(Eigen::Matrix4f &matrix)
+	{
+		matrix = Eigen::Matrix4f::Identity();
+		if (!checkIfExists("Model.GlobalTransformation.Affine.Type")) return ; 
+		if (!checkIfExists("Model.GlobalTransformation.Affine.Data")) return ; 
+
+		
+		std::string type  = pt_.get<std::string>("Model.GlobalTransformation.Affine.Type");
+		std::string data  = pt_.get<std::string>("Model.GlobalTransformation.Affine.Data");
+		
+		if (type.compare("matrix4f")==0)
+		{
+			std::stringstream ss (data);
+			//column major order
+			ss>>matrix(0,0)>>matrix(1,0)>>matrix(2,0)>>matrix(3,0);
+			ss>>matrix(0,1)>>matrix(1,1)>>matrix(2,1)>>matrix(3,1);
+			ss>>matrix(0,2)>>matrix(1,2)>>matrix(2,2)>>matrix(3,2);
+			ss>>matrix(0,3)>>matrix(1,3)>>matrix(2,3)>>matrix(3,3);
+
+			//row major order
+			//ss>>matrix(0,0)>>matrix(0,1)>>matrix(0,2)>>matrix(0,3);
+			//ss>>matrix(1,0)>>matrix(1,1)>>matrix(1,2)>>matrix(1,3);
+			//ss>>matrix(2,0)>>matrix(2,1)>>matrix(2,2)>>matrix(2,3);
+			//ss>>matrix(3,0)>>matrix(3,1)>>matrix(3,2)>>matrix(3,3);
+			return;
+		}
+		if (type.compare("Vector3f_Quaternionf")==0)
+		{
+			Eigen::Quaternionf q;
+			Eigen::Vector3f o;
+			std::stringstream ss (data);
+			ss>>o.x()>>o.y()>>o.z();
+			ss>>q.x()>>q.y()>>q.z()>>q.w();
+			Eigen::Affine3f affine;
+			affine.translate(o);
+			affine.rotate(q);
+			matrix = affine.matrix();
+			return;
+		}
+	}
+	void data_model::setGlobalModelMatrix(Eigen::Matrix4f matrix)
+	{
+		pt_.put("Model.GlobalTransformation.Affine.Type", "matrix4f");
+		std::stringstream ss;
+		ss << matrix(0,0) << " "<< matrix(1,0) << " "<< matrix(2,0) << " "<< matrix(3,0) << " ";
+		ss << matrix(0,1) << " "<< matrix(1,1) << " "<< matrix(2,1) << " "<< matrix(3,1) << " ";
+		ss << matrix(0,2) << " "<< matrix(1,2) << " "<< matrix(2,2) << " "<< matrix(3,2) << " ";
+		ss << matrix(0,3) << " "<< matrix(1,3) << " "<< matrix(2,3) << " "<< matrix(3,3) << " ";
+		//ss << matrix(0,0) << " "<< matrix(1,0) << " "<< matrix(2,0) << " "<< matrix(3,0) << " ";
+		//ss << matrix(0,1) << " "<< matrix(1,1) << " "<< matrix(2,1) << " "<< matrix(3,1) << " ";
+		//ss << matrix(0,2) << " "<< matrix(1,2) << " "<< matrix(2,2) << " "<< matrix(3,2) << " ";
+		//ss << matrix(0,3) << " "<< matrix(1,3) << " "<< matrix(2,3) << " "<< matrix(3,3) << " ";
+		pt_.put("Model.GlobalTransformation.Affine.Data", ss.str());
+
+	}

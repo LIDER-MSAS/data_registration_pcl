@@ -47,6 +47,8 @@ public:
 	void setResult(std::string scanId, std::string resultName, std::string result);
 	void getResult(std::string scanId, std::string resultName, float &result);
 
+	void getGlobalModelMatrix(Eigen::Matrix4f &matrix);
+	void setGlobalModelMatrix(Eigen::Matrix4f matrix);
 
 private:
 	boost::property_tree::ptree pt_;
