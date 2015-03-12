@@ -1,5 +1,3 @@
-
-
 #include <boost/make_shared.hpp>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -12,15 +10,14 @@
 #include <vector>
 #include <pcl/features/normal_3d.h>
 #include <pcl/registration/transforms.h>
-#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/registration/ndt.h>
 #include <pcl/console/parse.h>
 
 #include <pcl/registration/icp.h>
 
-#include "dataFramework\data_model.hpp"
+#include "dataFramework/data_model.hpp"
 
-#include "dataFramework\viewerLog.hpp"
+#include "dataFramework/viewerLog.hpp"
 #include <pcl/common/time.h>
 
 template <typename PointSource, typename PointTarget, typename Scalar = float> class myIcp : public  pcl::IterativeClosestPoint <PointSource, PointTarget, Scalar >
@@ -31,10 +28,6 @@ public:
 		return correspondences_;
 	}
 };
-
-
-using pcl::visualization::PointCloudColorHandlerGenericField;
-using pcl::visualization::PointCloudColorHandlerCustom;
 
 //convenient typedefs
 typedef pcl::PointXYZ PointT;
@@ -47,8 +40,7 @@ std::vector<std::string> indices;
 
 pcl::PointCloud<PointT> metascan;
 std::vector<std::string> pcNames;
-//pcl::visualization::PCLVisualizer p;
-//logViewer* logger;
+
 Eigen::Affine3f lastGlobalOdom;
 Eigen::Affine3f lastFit;
 Eigen::Affine3f currentFitCandidate;
@@ -102,7 +94,8 @@ bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	outputXML.setResult(cloudId, "AlignTime", executionTime);
 	cummulativeTime += executionTime;
 	outputXML.setResult(cloudId, "CummulativeAlignTime", cummulativeTime);
-return true; 
+	
+	return true;
 }
 
 void loadNextPc()
@@ -110,7 +103,6 @@ void loadNextPc()
 	currentPointcloud++;
 	if (currentPointcloud < indices.size())
 	{
-
 		std::cout << "loading pointcloud "<<indices[currentPointcloud]<<"\n";
 
 		//inputXML.getPointcloudName(indices[currentPointcloud],currentFileName);	
@@ -135,7 +127,7 @@ void loadNextPc()
 	}
 	else
 	{
-		std::cout <<"There is no mode pointclouds in given model \n";
+		std::cout <<"There is no more pointclouds in given model \n";
 
 	}
 }
@@ -188,7 +180,7 @@ void accept()
 	}
 	lastGlobalOdom = currentlyAssignedGlobalOdom;
 	lastFit = currentFitCandidate;
-	//logger->addMessage("registration accepted");
+
 	outputXML.setAffine(indices[currentPointcloud], lastFit.matrix());
 	std::string cloud_fn;
 	inputXML.getPointcloudName(indices[currentPointcloud] ,cloud_fn);
@@ -202,13 +194,12 @@ void accept()
 int main (int argc, char** argv)
 {
 
-	std::cout <<"USAGE:\n";
-	std::cout <<argv[0]<<" parameters inputModel.xml outputModel.xml\n";
-	std::cout <<" -d sets icp_CorrespondenceDistance\n";
-	std::cout <<" -r sets icp_RANSACOutlierRejectionThreshold\n";
-	std::cout <<" -i sets icp_MaximumIterations\n";
-	std::cout <<" -m sets usage of metascan\n";
-	std::cout <<" -u shows 3d viewer for semi-automatic registration\n";
+	std::cout << "USAGE:\n";
+	std::cout << argv[0] <<" parameters inputModel.xml outputModel.xml\n";
+	std::cout << " -d sets icp_CorrespondenceDistance\n";
+	std::cout << " -r sets icp_RANSACOutlierRejectionThreshold\n";
+	std::cout << " -i sets icp_MaximumIterations\n";
+	std::cout << " -m sets usage of metascan\n";
 
 	pcl::console::parse_argument (argc, argv, "-d", icp_CorrespondenceDistance);
 	pcl::console::parse_argument (argc, argv, "-r", icp_RANSACOutlierRejectionThreshold);
@@ -278,7 +269,5 @@ int main (int argc, char** argv)
 		registerScan();
 		accept();	
 	}
-	
-
 }
 /* ]--- */

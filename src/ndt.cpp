@@ -1,5 +1,3 @@
-
-
 #include <boost/make_shared.hpp>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -12,20 +10,16 @@
 #include <vector>
 #include <pcl/features/normal_3d.h>
 #include <pcl/registration/transforms.h>
-#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/registration/ndt.h>
 #include <pcl/console/parse.h>
 
 #include <pcl/registration/icp.h>
 
-#include "dataFramework\data_model.hpp"
+#include "dataFramework/data_model.hpp"
 
-#include "dataFramework\viewerLog.hpp"
+#include "dataFramework/viewerLog.hpp"
 #include <pcl/common/time.h>
 
-
-using pcl::visualization::PointCloudColorHandlerGenericField;
-using pcl::visualization::PointCloudColorHandlerCustom;
 
 //convenient typedefs
 typedef pcl::PointXYZ PointT;
@@ -38,8 +32,7 @@ std::vector<std::string> indices;
 
 pcl::PointCloud<PointT> metascan;
 std::vector<std::string> pcNames;
-pcl::visualization::PCLVisualizer p;
-logViewer* logger;
+
 Eigen::Affine3f lastGlobalOdom;
 Eigen::Affine3f lastFit;
 Eigen::Affine3f currentFitCandidate;
@@ -60,7 +53,6 @@ float ndt_res =1.0f;
 float ndt_step_size = 0.1f;
 float ndt_trans_eps = 0.01f;
 float cumulative_align_time = 0.0f;
-bool auto_reg = false;
 
 bool registerNDT(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &scan, Eigen::Affine3f &metascanToScan, std::string cloudId)
 {
@@ -86,14 +78,14 @@ bool registerNDT(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	cumulative_align_time +=executionTime;
 	outputXML.setResult(cloudId, "AlignTime", executionTime);
 	outputXML.setResult(cloudId, "CummulativeAlignTime", cumulative_align_time);
-
+	
+	return true;
 }
 void loadNextPc()
 {
 	currentPointcloud++;
 	if (currentPointcloud < indices.size())
 	{
-
 		std::cout << "loading pointcloud "<<indices[currentPointcloud]<<"\n";
 
 		//inputXML.getPointcloudName(indices[currentPointcloud],currentFileName);	
@@ -114,11 +106,10 @@ void loadNextPc()
 		std::cout<< odometryIncrement.matrix()<<"\n";
 		currentInitialFit = lastFit * odometryIncrement ; 
 		pcl::transformPointCloud(*currentlyRegisteredPc,*currentlyRegisteredPc,currentInitialFit );
-		logger->addMessage("loaded pointcloud , press r to register");
 	}
 	else
 	{
-		std::cout <<"There is no mode pointclouds in given model \n";
+		std::cout <<"There is no more pointclouds in given model \n";
 
 	}
 }
@@ -126,21 +117,17 @@ void registerScan()
 {
 	Eigen::Affine3f tr;
 	registration_accepted = false;
-	//bool res = registerNDT(metascan, *currentlyRegisteredPc, tr);
-	bool res;
 
-	res= registerNDT(metascan, *currentlyRegisteredPc, tr, indices[currentPointcloud]);
+	bool res = registerNDT(metascan, *currentlyRegisteredPc, tr, indices[currentPointcloud]);
 
 	if (res)
 	{
 		pcl::transformPointCloud(*currentlyRegisteredPc,*currentlyRegisteredPc, tr);
 		currentFitCandidate =   tr * currentInitialFit;
-		logger->addMessage("registration OK, press a to accept");
 	}
 	else
 	{
 		std::cout <<"registration failed\n";
-		logger->addMessage("registration NOT ok, l to load next scan, or r for next iterations of registration");
 	}
 }
 void accept()
@@ -157,7 +144,7 @@ void accept()
 	}
 	lastGlobalOdom = currentlyAssignedGlobalOdom;
 	lastFit = currentFitCandidate;
-	logger->addMessage("registration accepted");
+
 	outputXML.setAffine(indices[currentPointcloud], lastFit.matrix());
 	std::string cloud_fn;
 	inputXML.getPointcloudName(indices[currentPointcloud] ,cloud_fn);
@@ -165,60 +152,24 @@ void accept()
 	std::cout <<"saving model to " << outputXMLFn<<"\n";
 	outputXML.saveFile(outputXMLFn);
 }
-void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void* viewer_void)
-{
-	if (event.getKeySym()=="l" && event.keyUp())
-	{
-		loadNextPc();
-	}
-	if (event.getKeySym()=="r" && event.keyUp())
-	{
-		registerScan();
-	}
-	if (event.getKeySym()=="a" && event.keyUp())
-	{
-		accept();		
-	}
-	if (event.getKeySym()=="q"&& event.keyUp())
-	{
-		loadNextPc();
-		registerScan();
-		accept();		
-	}
-
-	p.removeAllPointClouds();
-	pcl::visualization::PointCloudColorHandlerCustom<PointT> metascanH(metascan.makeShared(), 0, 0, 255);
-	p.addPointCloud<PointT> (metascan.makeShared(),metascanH,"metascan" );
-
-	pcl::visualization::PointCloudColorHandlerCustom<PointT> scanH(currentlyRegisteredPc, 255, 0, 0);
-	p.addPointCloud<PointT> (currentlyRegisteredPc,scanH, "scan");
-}
 
 int main (int argc, char** argv)
 {
-	logger =new logViewer(&p,25);
 
 	std::cout <<"USAGE:\n";
 	std::cout <<argv[0]<<" parameters inputModel.xml outputModel.xml\n";
 	std::cout <<" -r sets ndt grid resolution\n";
 	std::cout <<" -i sets ndt max iterations\n";
 	std::cout <<" -s sets ndt step size \n";
-
 	std::cout <<" -m sets usage of metascan\n";
 	std::cout <<" -u shows 3d viewer for semi-automatic registration\n";
 
 
 	pcl::console::parse_argument (argc, argv, "-r", ndt_res);
-
 	pcl::console::parse_argument (argc, argv, "-i", ndt_iter);
-
 	pcl::console::parse_argument (argc, argv, "-t", ndt_trans_eps);
-
 	pcl::console::parse_argument (argc, argv, "-s", ndt_step_size);
-
 	pcl::console::parse_argument (argc, argv, "-m", isUseMetascan);
-
-	pcl::console::parse_argument (argc, argv, "-u", auto_reg);
 	
 
 
@@ -246,7 +197,6 @@ int main (int argc, char** argv)
 	outputXML.addAlgorithmParam("ndt_step_size",ndt_step_size);
 	outputXML.addAlgorithmParam("ndt_step_size",ndt_step_size);
 	outputXML.addAlgorithmParam("isUseMetascan",isUseMetascan);
-	outputXML.addAlgorithmParam("auto_reg",auto_reg);
 
 
 	std::string dataPath;
@@ -273,18 +223,12 @@ int main (int argc, char** argv)
 	outputXML.setResult(indices[0], "CummulativeAlignTime", 0.0f);
 	outputXML.setAffine(indices[0], lastGlobalOdom.matrix());
 
-	p.registerKeyboardCallback (keyboardEventOccurred, (void*)&p);
-	if (auto_reg)
-	{
-		//p.close();
-		for (int i=0; i<indices.size()-1; i++)
-		{
-			loadNextPc();
-			registerScan();
-			accept();	
-		}
-	}
 
-	if (!auto_reg) p.spin();
+	for (int i=0; i<indices.size()-1; i++)
+	{
+		loadNextPc();
+		registerScan();
+		accept();	
+	}
 }
 /* ]--- */
