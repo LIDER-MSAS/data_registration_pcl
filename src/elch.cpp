@@ -123,6 +123,14 @@ int
 	model.getAllScansId(cloudIds);
 	CloudVector clouds;
 	std::vector<CloudPtr> cloudsBeforeELCH;
+
+	
+	std::string dataPath;
+	model.getDataSetPath(dataPath);
+	modelAfterElch.setDataSetPath(dataPath);
+
+
+
 	for (size_t i = 0; i < cloudIds.size (); i++)
 	{
 		std::string fn;
