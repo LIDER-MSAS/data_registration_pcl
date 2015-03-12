@@ -33,13 +33,7 @@ int main (int argc, char** argv)
 	std::string param_outputModel = argv[2];
 	std::string param_leaf_size;
 
-
-	
-	float _l;
-	if(pcl::console::parse_argument (argc, argv, "-l", _l)!=-1)
-	{
-		leaf_size=_l;
-	}
+	if(pcl::console::parse_argument (argc, argv, "-l", leaf_size);
 
 	//Generate text from values of parameters
 	std::ostringstream ss;

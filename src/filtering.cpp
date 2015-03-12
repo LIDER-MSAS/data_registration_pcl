@@ -32,16 +32,8 @@ int main (int argc, char** argv)
 	std::string param_StddevMulThresh;
 	
 
-	int _k;
-	float _s;
-	if(pcl::console::parse_argument (argc, argv, "-k", _k)!=-1)
-	{
-		MeanK=_k;
-	}
-	if(pcl::console::parse_argument (argc, argv, "-s", _s)!=-1)
-	{
-		StddevMulThresh=_s;
-	}
+	pcl::console::parse_argument (argc, argv, "-k", MeanK);
+	pcl::console::parse_argument (argc, argv, "-s", StddevMulThresh);
 	
 	//Generate text from values of parameters
 	std::ostringstream ss;
