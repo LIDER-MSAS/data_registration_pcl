@@ -155,24 +155,25 @@ void accept()
 
 int main (int argc, char** argv)
 {
-
-	std::cout <<"USAGE:\n";
-	std::cout <<argv[0]<<" parameters inputModel.xml outputModel.xml\n";
-	std::cout <<" -r\tSets the voxel grid resolution.\tDefault: " << ndt_res << std::endl;
-	std::cout <<" -i\tSets the maximum number of iterations the internal optimization should run for.\tDefault: " << ndt_iter << std::endl;
-	std::cout <<" -t\tSets the transformation epsilon.\tDefault: " << ndt_trans_eps << std::endl;
-	std::cout <<" -s\tSets the newton line search maximum step length.\tDefault: " << ndt_step_size << std::endl;
-	std::cout <<" -m\tSets the usage of metascan.\tDefault:" << isUseMetascan << std::endl;
-
+	if(argc<3)
+	{
+		std::cout <<"USAGE:\n";
+		std::cout <<argv[0]<<" parameters inputModel.xml outputModel.xml\n";
+		std::cout <<" -r\tSets the voxel grid resolution.\tDefault: " << ndt_res << std::endl;
+		std::cout <<" -i\tSets the maximum number of iterations the internal optimization should run for.\tDefault: " << ndt_iter << std::endl;
+		std::cout <<" -eps\tSets the transformation epsilon.\tDefault: " << ndt_trans_eps << std::endl;
+		std::cout <<" -s\tSets the newton line search maximum step length.\tDefault: " << ndt_step_size << std::endl;
+		std::cout <<" -m\tSets the usage of metascan.\tDefault:" << isUseMetascan << std::endl;
+	
+		return -1;
+	}
 
 	pcl::console::parse_argument (argc, argv, "-r", ndt_res);
 	pcl::console::parse_argument (argc, argv, "-i", ndt_iter);
-	pcl::console::parse_argument (argc, argv, "-t", ndt_trans_eps);
+	pcl::console::parse_argument (argc, argv, "-eps", ndt_trans_eps);
 	pcl::console::parse_argument (argc, argv, "-s", ndt_step_size);
 	pcl::console::parse_argument (argc, argv, "-m", isUseMetascan);
 	
-
-
 	std::vector<int> xml_indices;
 	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
 

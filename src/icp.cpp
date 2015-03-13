@@ -54,13 +54,15 @@ int currentPointcloud =0;
 pcl::PointCloud<PointT>::Ptr currentlyRegisteredPc;
 bool registration_accepted = false;
 std::vector<std::string> msg;
+
 bool isUseMetascan = false;
 float  cummulativeTime =0;
-double icp_CorrespondenceDistance = 0.15;
-double icp_RANSACOutlierRejectionThreshold = 0.15;
+double icp_CorrespondenceDistance = 0.3;
+double icp_RANSACOutlierRejectionThreshold = 0;
 int icp_MaximumIterations = 100;
 int RANSACIterations=0;
 double TransformationEpsilon=0.0;
+
 
 bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &scan, Eigen::Affine3f &metascanToScan, std::string cloudId)
 {
@@ -199,7 +201,6 @@ void accept()
 
 int main (int argc, char** argv)
 {
-	
 	if(argc<3)
 	{
 		std::cout << "Usage:\n";
@@ -215,17 +216,16 @@ transformed source index is smaller than the given inlier distance threshold.\tD
 		std::cout << " -ri\tSets the number of iterations RANSAC should run for.\tDefault: " << RANSACIterations << std::endl;
 		std::cout << " -eps\tSets the usage of metascan.\tDefault: " << TransformationEpsilon << std::endl;
 
-	
 		return -1;
 	}
 
-		pcl::console::parse_argument (argc, argv, "-d", icp_CorrespondenceDistance);
-		pcl::console::parse_argument (argc, argv, "-r", icp_RANSACOutlierRejectionThreshold);
-		pcl::console::parse_argument (argc, argv, "-i", icp_MaximumIterations);
-		pcl::console::parse_argument (argc, argv, "-m", isUseMetascan);
+	pcl::console::parse_argument (argc, argv, "-d", icp_CorrespondenceDistance);
+	pcl::console::parse_argument (argc, argv, "-r", icp_RANSACOutlierRejectionThreshold);
+	pcl::console::parse_argument (argc, argv, "-i", icp_MaximumIterations);
+	pcl::console::parse_argument (argc, argv, "-m", isUseMetascan);
 		
-		pcl::console::parse_argument (argc, argv, "-ri", RANSACIterations);
-		pcl::console::parse_argument (argc, argv, "-eps", TransformationEpsilon);
+	pcl::console::parse_argument (argc, argv, "-ri", RANSACIterations);
+	pcl::console::parse_argument (argc, argv, "-eps", TransformationEpsilon);
 
 	std::vector<int> xml_indices;
 	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
