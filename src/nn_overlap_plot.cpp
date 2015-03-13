@@ -37,41 +37,41 @@ Eigen::Vector3f getOrigin (int id )
 
 void addEdgeToPlot(PCLPlotter * p, int index_i, int index_j, float overlap)
 {
-  std::vector<double> ax;
-  std::vector<double> ay;
-  
-  ax.push_back(index_i);
-  ax.push_back(index_j);
-	
-  ay.push_back(overlap);
-  ay.push_back(overlap);
+	std::vector<double> ax;
+	std::vector<double> ay;
+
+	ax.push_back(index_i);
+	ax.push_back(index_j);
+
+	ay.push_back(overlap);
+	ay.push_back(overlap);
 
 
-  //addPlotData (std::vector< double > const &array_x, std::vector< double >const &array_y, char const *name="Y Axis", int type=vtkChart::LINE, std::vector< char > const &color=std::vector< char >())
-  
-  stringstream ss;
-  ss << "overlap: "<<cloudIds[ index_j] << " - " << cloudIds[index_i]<< " :" <<std::setprecision(2) <<  overlap;
-  string str = ss.str();
-  p->addPlotData(ax,ay,str.c_str(),vtkChart::BAR);
-  
-  //p->setXRange(-50,50);
-  //p->setYRange(-50,50);
+	//addPlotData (std::vector< double > const &array_x, std::vector< double >const &array_y, char const *name="Y Axis", int type=vtkChart::LINE, std::vector< char > const &color=std::vector< char >())
+
+	stringstream ss;
+	ss << "overlap: "<<cloudIds[ index_j] << " - " << cloudIds[index_i]<< " :" <<std::setprecision(2) <<  overlap;
+	string str = ss.str();
+	p->addPlotData(ax,ay,str.c_str(),vtkChart::BAR);
+
+	//p->setXRange(-50,50);
+	//p->setYRange(-50,50);
 }
 
 int main (int argc, char **argv)
 {
-	
+
 	if(argc < 3)
 	{
 		printf("usage: icp_overlap_viewer.exe input.xml -d 0.5\n");
 		printf("-d threshold_determine_correspondences\n");
-		
+
 
 		return -1;
 	}
 
 	PCLPlotter *plotter = new PCLPlotter ("My Plotter");
-    plotter->setShowLegend (true);
+	plotter->setShowLegend (true);
 
 
 	std::string input_file_name(argv[1]);
@@ -111,19 +111,19 @@ int main (int argc, char **argv)
 	for (int i=1; i< clouds.size(); i++)
 	{
 		int j = i - 1;
-		
-			  pcl::registration::CorrespondenceEstimation<PointType, PointType> ce;
-			  ce.setInputTarget (clouds[i]);
-			  ce.setInputCloud (clouds[j]);
-			  pcl::CorrespondencesPtr corr (new pcl::Correspondences);
-			  ce.determineCorrespondences (*corr, threshold_determine_correspondences);
 
-			  printf("i:%d j:%d corr: %d clouds[i]:%d clouds[j]:%d overlap:%.2f\n", i,j, corr->size (), clouds[i]->size(), clouds[j]->size(), float(corr->size ())/float(clouds[j]->size())*100.0);
-			  addEdgeToPlot(plotter,i, j, float(corr->size ())/float(clouds[j]->size())*100.0,);
+		pcl::registration::CorrespondenceEstimation<PointType, PointType> ce;
+		ce.setInputTarget (clouds[i]);
+		ce.setInputCloud (clouds[j]);
+		pcl::CorrespondencesPtr corr (new pcl::Correspondences);
+		ce.determineCorrespondences (*corr, threshold_determine_correspondences);
+
+		printf("i:%d j:%d corr: %d clouds[i]:%d clouds[j]:%d overlap:%.2f\n", i,j, corr->size (), clouds[i]->size(), clouds[j]->size(), float(corr->size ())/float(clouds[j]->size())*100.0);
+		addEdgeToPlot(plotter,i, j, float(corr->size ())/float(clouds[j]->size())*100.0,);
 	}
 
 	plotter->setXRange(0,clouds.size());
-    plotter->setYRange(0,100);
+	plotter->setYRange(0,100);
 	plotter->spin();
 
 	return 0;
