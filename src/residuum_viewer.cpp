@@ -40,16 +40,7 @@ int main ()
 	std::vector<double> distances;
 	model_p->getDistancesToModel(coeff,distances);
 	
-	for (int i =0; i < distances.size(); i++)
-	{
-		PointT p  = (*plane)[i];
-		pcl::PointXYZI pi;
-		pi.x = p.x;
-		pi.y = p.y;
-		pi.z = p.z;
-		pi.intensity = distances[i];
-		planeInlinersDistance->push_back(pi);
-	}
+
 	
 	//pcl::visualization::PointCloudColorHandlerCustom<PointT> handler_plane (plane, 0, 255, 0);
 	Eigen::Vector3f n (coeff[0],coeff[1],coeff[2]);
@@ -61,14 +52,28 @@ int main ()
 
 	Eigen::Affine3f rot = Eigen::Affine3f::Identity();
 	rot.rotate(q2*q);
-	pcl::transformPointCloud(*planeInlinersDistance,*planeInlinersDistance,rot);
+	pcl::transformPointCloud(*plane,*plane,rot);
 
+	for (int i =0; i < distances.size(); i++)
+	{
+		PointT p  = (*plane)[i];
+	
+		pcl::PointXYZI pi;
+		pi.x = p.x;
+		pi.y = p.y;
+		pi.z = p.z;
+		pi.intensity = p.x;
+		planeInlinersDistance->push_back(pi);
+
+	}
 	//p.addPointCloud(plane,handler_plane,"plane");
 	
 	pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> intensity_distribution(planeInlinersDistance,"intensity");
-	p.addCoordinateSystem(10);
+	//p.addCoordinateSystem(10);
 	p.addPointCloud(planeInlinersDistance, intensity_distribution);
-	pcl::io::savePCDFile("pc.pcd", *intensity_distribution);
+	//pcl::io::savePCDFile("pc.pcd", *intensity_distribution);
+
+	p.setBackgroundColor(0xff,0xff,0xff);
 	p.spin();
   return 0;
 }

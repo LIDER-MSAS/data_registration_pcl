@@ -52,7 +52,7 @@ void addEdgeToPlot(PCLPlotter * p, int index_i, int index_j, float overlap)
   stringstream ss;
   ss << "overlap: "<<cloudIds[ index_j] << " - " << cloudIds[index_i]<< " :" <<std::setprecision(2) <<  overlap;
   string str = ss.str();
-  p->addPlotData(ax,ay,str.c_str());
+  p->addPlotData(ax,ay,str.c_str(),vtkChart::BAR);
   
   //p->setXRange(-50,50);
   //p->setYRange(-50,50);
@@ -119,7 +119,7 @@ int main (int argc, char **argv)
 			  ce.determineCorrespondences (*corr, threshold_determine_correspondences);
 
 			  printf("i:%d j:%d corr: %d clouds[i]:%d clouds[j]:%d overlap:%.2f\n", i,j, corr->size (), clouds[i]->size(), clouds[j]->size(), float(corr->size ())/float(clouds[j]->size())*100.0);
-			  addEdgeToPlot(plotter,i, j, float(corr->size ())/float(clouds[j]->size())*100.0);
+			  addEdgeToPlot(plotter,i, j, float(corr->size ())/float(clouds[j]->size())*100.0,);
 	}
 
 	plotter->setXRange(0,clouds.size());
