@@ -125,8 +125,7 @@ void addEdgeToPlot(PCLPlotter * p, double x1, double y1, double x2, double y2, i
 
 
 
-bool
-	loopDetection (int end, const CloudVector &clouds, double dist, int &first, int &last)
+bool loopDetection (int end, const CloudVector &clouds, double dist, int &first, int &last)
 {
 	static double min_dist = -1;
 	int state = 0;
@@ -174,35 +173,45 @@ bool
 
 int main (int argc, char * argv [])
 {
+	double maxCorrespondenceDistance = 0.1;
+	double RANSACOutlierRejectionThreshold = 0.1;
+	int maximumICPIterations = 100;
+	double loopdetectiondistance = 3.0;
+
 	if(argc < 2)
 	{
-		printf("usage: elch_viewer input.xml -d 0.1 -r 0.1 -i 100 -l 3.0\n");
-		printf("-d maxCorrespondenceDistance\n");
-		printf("-r RANSACOutlierRejectionThreshold\n");
-		printf("-i maximumICPIterations\n");
-		printf("-l loopdetectiondistance\n");
+		std::cout << "Usage:\n";
+		std::cout << argv[0] <<" inputModel.xml parameters\n";
+		std::cout << " -d\tSets the maximum distance threshold between two correspondent points in source <-> target.\tDefault: " << maxCorrespondenceDistance << std::endl;
+		std::cout << " -r\tSets the inlier distance threshold for the internal RANSAC outlier rejection loop.\tDefault: " << RANSACOutlierRejectionThreshold << std::endl;
+		std::cout << " -i\tSets the maximum number of iterations the internal optimization should run for.\tDefault: " << maximumICPIterations << std::endl;
+		std::cout << " -l\tSets the maximum distance between scans to consider a loop.\tDefault: " << loopdetectiondistance << std::endl;
+
 		return -1;
 	}
 
 	PCLPlotter *plotter = new PCLPlotter ("My Plotter");
 	plotter->setShowLegend (true);
+	
+
+	std::vector<int> xml_indices;
+	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
+	
+	if(xml_indices.size()!=1)
+	{
+		return -2;
+	}
 
 
-	std::string input_file_name(argv[1]);
+	std::string input_file_name(argv[xml_indices[0]]);
 	//std::string output_file_name(argv[2]);
 
 	addTrayectory(input_file_name, plotter);
 
-	double maxCorrespondenceDistance = 0.1;
+
 	pcl::console::parse_argument (argc, argv, "-d", maxCorrespondenceDistance);
-
-	double RANSACOutlierRejectionThreshold = 0.1;
 	pcl::console::parse_argument (argc, argv, "-r", RANSACOutlierRejectionThreshold);
-
-	int maximumICPIterations = 100;
 	pcl::console::parse_argument (argc, argv, "-i", maximumICPIterations);
-
-	double loopdetectiondistance = 3.0;
 	pcl::console::parse_argument (argc, argv, "-l", loopdetectiondistance);
 
 	pcl::registration::ELCH<PointType> elch;
@@ -254,10 +263,7 @@ int main (int argc, char * argv [])
 			elch.compute ();
 		}
 	}
-	printf("-d maxCorrespondenceDistance\n");
-	printf("-r RANSACOutlierRejectionThreshold\n");
-	printf("-i maximumICPIterations\n");
-	printf("-l loopdetectiondistance\n");
+
 	plotter->spin();
 
 	return 1;

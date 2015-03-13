@@ -16,18 +16,26 @@ float	StddevMulThresh=1.0f;
 
 int main (int argc, char** argv)
 {
-	std::cout << "Usage:\n";
-	std::cout << argv[0] << " input_model.xml output_model.xml parameters\n";
-	std::cout << " -k <number>\t\tSet the number of nearest neighbors to use for mean distance estimation. Default: " << MeanK << std::endl;
-	std::cout << " -s <multiplier>\tSet the standard deviation multiplier for the distance threshold calculation. Default: " << StddevMulThresh << std::endl;
-
 	if(argc<3)
 	{
+		std::cout << "Usage:\n";
+		std::cout << argv[0] << " input_model.xml output_model.xml parameters\n";
+		std::cout << " -k <number>\t\tSet the number of nearest neighbors to use for mean distance estimation. Default: " << MeanK << std::endl;
+		std::cout << " -s <multiplier>\tSet the standard deviation multiplier for the distance threshold calculation. Default: " << StddevMulThresh << std::endl;
 		return -1;
 	}
 
-	std::string param_inputModel = argv[1];
-	std::string param_outputModel = argv[2];
+	std::vector<int> xml_indices;
+	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
+
+	if(xml_indices.size()!=2)
+	{
+		return -2;
+	}
+
+
+	std::string param_inputModel = argv[xml_indices[0]];
+	std::string param_outputModel = argv[xml_indices[1]];
 	std::string param_MeanK;
 	std::string param_StddevMulThresh;
 	
@@ -57,7 +65,7 @@ int main (int argc, char** argv)
 	if(!inputModel.loadFile(param_inputModel))
 	{
 		std::cout << "Error loading: " << param_inputModel << std::endl;
-		return -2;
+		return -3;
 	}
 	std::cout << "Loaded: " << param_inputModel << " correctly.\n";
 
@@ -78,7 +86,7 @@ int main (int argc, char** argv)
 		if(!boost::filesystem::is_directory(pathOfNewDataDirectory))
 		{
 			std::cout<<"Could not create dir: "<< pathOfNewDataDirectory << std::endl;
-			return -3;
+			return -4;
 		}
 	}
 

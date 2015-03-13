@@ -88,14 +88,12 @@ int main (int argc, char **argv)
 
 	if(argc < 3)
 	{
-		printf("usage: elch input.xml output.xml -d 0.1 -r 0.1 -i 100 -l 3.0\n");
-		printf("-d maxCorrespondenceDistance\n");
-		printf("-r RANSACOutlierRejectionThreshold\n");
-		printf("-i maximumICPIterations\n");
-		printf("-l loopdetectiondistance\n");
-		//printf("-d threshold_distance_between_indexes\n");
-		//printf("-r threshold_determine_correspondences\n");
-		//printf("-o threshold_overlap\n");
+		std::cout << "Usage:\n";
+		std::cout << argv[0] <<" inputModel.xml parameters\n";
+		std::cout << " -d\tSets the maximum distance threshold between two correspondent points in source <-> target.\tDefault: " << maxCorrespondenceDistance << std::endl;
+		std::cout << " -r\tSets the inlier distance threshold for the internal RANSAC outlier rejection loop.\tDefault: " << RANSACOutlierRejectionThreshold << std::endl;
+		std::cout << " -i\tSets the maximum number of iterations the internal optimization should run for.\tDefault: " << maximumICPIterations << std::endl;
+		std::cout << " -l\tSets the maximum distance between scans to consider a loop.\tDefault: " << loopdetectiondistance << std::endl;
 
 		return -1;
 	}
@@ -199,6 +197,8 @@ int main (int argc, char **argv)
 		Eigen::Matrix4f fin = tr*tr2;
 		modelAfterElch.setAffine(cloudIds[i], fin);
 	}
+
 	modelAfterElch.saveFile(output_file_name);
+	
 	return 0;
 }

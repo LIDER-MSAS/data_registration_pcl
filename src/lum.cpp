@@ -32,31 +32,40 @@ Eigen::Vector3f getOrigin (int id )
 
 int main (int argc, char **argv)
 {
+	int lumIter = 100;
+	double convergenceThreshold = 0.000001;
+	double threshold_diff_norm = 10;
+	double threshold_determine_correspondences = 0.3;
+	double threshold_overlap = 0.6;
 
 	if(argc < 3)
 	{
-		printf("usage: lum input.xml output.xml -l 10 -c 0.001 -t 3.0 -d 50 -r 1.5 -o 0.3\n");
-		printf("-l lumIter\n");
-		printf("-c convergenceThreshold\n");
-		printf("-t threshold_diff_norm\n");
-		printf("-r threshold_determine_correspondences\n");
-		printf("-o threshold_overlap\n");
+		std::cout << "Usage:\n";
+		std::cout << argv[0] << "input.xml output.xml parameters\n";
+		std::cout << " -i\tSets the maximum number of LUM iterations. Deafult: "<<lumIter<<std::endl;
+		std::cout << " -c\tSets the convergence threshold. Use -c 0 to do maximum number of iterations. Deafult: "<<convergenceThreshold<<std::endl;
+		std::cout << " -d\tSets the maximum distance between scans to consider a link. Deafult: "<<threshold_diff_norm<<std::endl;
+		std::cout << " -r\tSets the radius for the nearest neighbor search. Deafult: "<<threshold_determine_correspondences<<std::endl;
+		std::cout << " -o\tSets the minimum overlap between scans to consider a link. -o 0.6 means 60% overlap. Deafult: "<<threshold_overlap<<std::endl;
 
 		return -1;
 	}
+	
+	std::vector<int> xml_indices;
+	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
+	
+	if(xml_indices.size()!=2)
+	{
+		return -2;
+	}
 
-	std::string input_file_name(argv[1]);
-	std::string output_file_name(argv[2]);
+	std::string input_file_name(argv[xml_indices[0]]);
+	std::string output_file_name(argv[xml_indices[1]]);
 
-	int lumIter = 100;
-	double convergenceThreshold = 0.0001;
-	double threshold_diff_norm = 3.0;
-	double threshold_determine_correspondences =1.5;
-	double threshold_overlap = 0.3;
 
-	pcl::console::parse_argument (argc, argv, "-l", lumIter);
+	pcl::console::parse_argument (argc, argv, "-i", lumIter);
 	pcl::console::parse_argument (argc, argv, "-c", convergenceThreshold);
-	pcl::console::parse_argument (argc, argv, "-t", threshold_diff_norm);
+	pcl::console::parse_argument (argc, argv, "-d", threshold_diff_norm);
 	pcl::console::parse_argument (argc, argv, "-r", threshold_determine_correspondences);
 	pcl::console::parse_argument (argc, argv, "-o", threshold_overlap);
 	

@@ -185,6 +185,7 @@ void accept()
 	std::string cloud_fn;
 	inputXML.getPointcloudName(indices[currentPointcloud] ,cloud_fn);
 	outputXML.setPointcloudName(indices[currentPointcloud], cloud_fn);
+
 	std::cout <<"saving model to " << outputXMLFn<<"\n";
 	outputXML.saveFile(outputXMLFn);
 }
@@ -193,27 +194,35 @@ void accept()
 
 int main (int argc, char** argv)
 {
-
-	std::cout << "USAGE:\n";
-	std::cout << argv[0] <<" parameters inputModel.xml outputModel.xml\n";
-	std::cout << " -d\tSets the maximum distance threshold between two correspondent points in source <-> target.\
+	
+	if(argc<3)
+	{
+		std::cout << "Usage:\n";
+		std::cout << argv[0] <<" inputModel.xml outputModel.xml parameters\n";
+		std::cout << " -d\tSets the maximum distance threshold between two correspondent points in source <-> target.\
 If the distance is larger than this threshold, the points will be ignored in the alignment process.\tDefault: " << icp_CorrespondenceDistance << std::endl;
-	std::cout << " -r\tSets the inlier distance threshold for the internal RANSAC outlier rejection loop.\
+		std::cout << " -r\tSets the inlier distance threshold for the internal RANSAC outlier rejection loop.\
 The method considers a point to be an inlier, if the distance between the target data index and the \
 transformed source index is smaller than the given inlier distance threshold.\tDefault: " << icp_RANSACOutlierRejectionThreshold << std::endl;
-	std::cout << " -i\tSets the maximum number of iterations the internal optimization should run for.\tDefault: " << icp_MaximumIterations << std::endl;
-	std::cout << " -m\tSets the usage of metascan.\tDefault: " << isUseMetascan << std::endl;
+		std::cout << " -i\tSets the maximum number of iterations the internal optimization should run for.\tDefault: " << icp_MaximumIterations << std::endl;
+		std::cout << " -m\tSets the usage of metascan.\tDefault: " << isUseMetascan << std::endl;
 
-	pcl::console::parse_argument (argc, argv, "-d", icp_CorrespondenceDistance);
-	pcl::console::parse_argument (argc, argv, "-r", icp_RANSACOutlierRejectionThreshold);
-	pcl::console::parse_argument (argc, argv, "-i", icp_MaximumIterations);
-	pcl::console::parse_argument (argc, argv, "-m", isUseMetascan);
+		pcl::console::parse_argument (argc, argv, "-d", icp_CorrespondenceDistance);
+		pcl::console::parse_argument (argc, argv, "-r", icp_RANSACOutlierRejectionThreshold);
+		pcl::console::parse_argument (argc, argv, "-i", icp_MaximumIterations);
+		pcl::console::parse_argument (argc, argv, "-m", isUseMetascan);
 	
+		return -1;
+	}
 
 
 	std::vector<int> xml_indices;
 	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
-
+	
+	if(xml_indices.size()!=2)
+	{
+		return -2;
+	}
 
 	std::string inputXMLFn = argv[xml_indices[0]];
 	outputXMLFn = argv[xml_indices[1]];
