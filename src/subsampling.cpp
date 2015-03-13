@@ -18,19 +18,25 @@ double      default_filter_max = std::numeric_limits<double>::max ();
 
 int main (int argc, char** argv)
 {
-	//print_info ("Downsample a model using pcl::VoxelGrid \n USAGE: subsampling leaf_size input_model output_model\n");
-
-	std::cout << "Usage:\n";
-	std::cout << argv[0] << " input_model.xml output_model.xml parameters\n";
-	std::cout << " -l <leaf_size>\t\tSet the voxel grid leaf size. Default: " << leaf_size << std::endl;
-	
 	if(argc<3)
 	{
+		std::cout << "Usage:\n";
+		std::cout << argv[0] << " input_model.xml output_model.xml parameters\n";
+		std::cout << " -l <leaf_size>\t\tSet the voxel grid leaf size. Default: " << leaf_size << std::endl;
+	
 		return -1;
 	}
+	
+	std::vector<int> xml_indices;
+	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
+	
+	if(xml_indices.size()!=2)
+	{
+		return -2;
+	}
 
-	std::string param_inputModel = argv[1];
-	std::string param_outputModel = argv[2];
+	std::string param_inputModel = argv[xml_indices[0]];
+	std::string param_outputModel = argv[xml_indices[1]];
 	std::string param_leaf_size;
 
 	pcl::console::parse_argument (argc, argv, "-l", leaf_size);
@@ -101,10 +107,12 @@ int main (int argc, char** argv)
 		std::cout <<"loading pointcloud:" << inputFn<<"\n";
 		pcl::io::loadPCDFile(inputFn.string(), *inputCloud);
 
+		// Create the filtering object
 		VoxelGrid<pcl::PCLPointCloud2> grid;
 		grid.setInputCloud (inputCloud);
 		grid.setLeafSize (leaf_size, leaf_size, leaf_size);
 
+		//Measure the computation time
 		pcl::StopWatch sw;
 		sw.reset();
 		grid.filter (*outputCloud);

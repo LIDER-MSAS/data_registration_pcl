@@ -69,14 +69,14 @@ bool registerNDT(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	pcl::StopWatch sw;
 	sw.reset();
 	ndt->align (*tmp);
-	float executionTime = sw.getTime();
+	double time = sw.getTime();
 
 	std::cout << "After NDT:\n";
 	std::cout << ndt->getFinalTransformation () << std::endl;
 	metascanToScan = ndt->getFinalTransformation();
 	outputXML.setResult(cloudId, "FitnessScore", ndt->getFitnessScore());
-	cumulative_align_time +=executionTime;
-	outputXML.setResult(cloudId, "AlignTime", executionTime);
+	cumulative_align_time +=time;
+	outputXML.setResult(cloudId, "AlignTime", time);
 	outputXML.setResult(cloudId, "CumulativeAlignTime", cumulative_align_time);
 	
 	return true;

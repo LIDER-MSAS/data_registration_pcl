@@ -66,7 +66,7 @@ bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	std::cout <<"invoking ICP on scan "<< cloudId<< " \n";
 
 	myIcp<PointT, PointT> *icp;
-	icp = new myIcp<PointT, PointT>();
+	icp = new myIcp<PointT, PointT>();	//TODO: change to smart pointer
 
 	icp->setMaximumIterations (icp_MaximumIterations);
 	icp->setMaxCorrespondenceDistance (icp_CorrespondenceDistance);
@@ -79,7 +79,7 @@ bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	pcl::StopWatch sw;
 	sw.reset();
 	icp->align (*tmp);
-	float executionTime = sw.getTime();
+	double time = sw.getTime();
 	std::cout << icp->getFinalTransformation () << std::endl;
 	metascanToScan = icp->getFinalTransformation();
 
@@ -91,10 +91,12 @@ bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	}
 	outputXML.setResult(cloudId, "FitnessScore", icp->getFitnessScore());
 	printf("FitnessScore: %f\n", icp->getFitnessScore());
-	outputXML.setResult(cloudId, "AlignTime", executionTime);
-	cummulativeTime += executionTime;
+	outputXML.setResult(cloudId, "AlignTime", time);
+	cummulativeTime += time;
 	outputXML.setResult(cloudId, "CummulativeAlignTime", cummulativeTime);
-	
+
+	delete icp;	//TODO: remove this
+
 	return true;
 }
 

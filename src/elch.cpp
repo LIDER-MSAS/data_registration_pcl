@@ -33,8 +33,7 @@ Eigen::Vector3f getOrigin (int id )
 
 
 
-bool
-	loopDetection (int end, const CloudVector &clouds, double dist, int &first, int &last)
+bool loopDetection (int end, const CloudVector &clouds, double dist, int &first, int &last)
 {
 	static double min_dist = -1;
 	int state = 0;

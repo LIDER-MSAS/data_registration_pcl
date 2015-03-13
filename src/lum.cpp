@@ -50,10 +50,10 @@ int main (int argc, char **argv)
 
 		return -1;
 	}
-	
+
 	std::vector<int> xml_indices;
 	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
-	
+
 	if(xml_indices.size()!=2)
 	{
 		return -2;
@@ -68,7 +68,7 @@ int main (int argc, char **argv)
 	pcl::console::parse_argument (argc, argv, "-d", threshold_diff_norm);
 	pcl::console::parse_argument (argc, argv, "-r", threshold_determine_correspondences);
 	pcl::console::parse_argument (argc, argv, "-o", threshold_overlap);
-	
+
 	std::cout << "threshold_diff_norm = " << threshold_diff_norm << std::endl;
 	std::cout << "threshold_determine_correspondences = " << threshold_determine_correspondences << std::endl;
 	std::cout << "threshold_overlap = " << threshold_overlap << std::endl;
@@ -76,11 +76,12 @@ int main (int argc, char **argv)
 	std::cout << "convergenceThreshold = " << convergenceThreshold << std::endl;
 
 	model.loadFile(input_file_name);
+
 	pcl::registration::LUM<PointType> lum;
 	lum.setMaxIterations (lumIter);
 	lum.setConvergenceThreshold (convergenceThreshold);
 
-	
+
 	std::string dataPath;
 	model.getDataSetPath(dataPath);
 	modelAfterLum.setDataSetPath(dataPath);
@@ -94,7 +95,7 @@ int main (int argc, char **argv)
 		model.getPointcloudName(cloudIds[i], fn);
 		modelAfterLum.setPointcloudName(cloudIds[i], fn);
 		model.getAffine(cloudIds[i], tr);
-		
+
 		fn= model.getFullPathOfPointcloud(cloudIds[i]);
 
 		pcl::PointCloud<PointType>::Ptr pc (new pcl::PointCloud<PointType>);
@@ -106,34 +107,34 @@ int main (int argc, char **argv)
 	}
 
 
-	for (int i=0; i< clouds.size(); i++)
+	for (int i=0; i<clouds.size(); i++)
 	{
-		for (int j=0; j< i; j++)
+		for (int j=0; j<i; j++)
 		{
 			Eigen::Vector3f origin1 = getOrigin (i);
 			Eigen::Vector3f origin2 = getOrigin (j);
 			Eigen::Vector3f diff = origin1 - origin2;
-			float dist =diff.norm();
-	
+			float dist = diff.norm();
+
 			if(diff.norm () < threshold_diff_norm)
 			{
-			  pcl::registration::CorrespondenceEstimation<PointType, PointType> ce;
-			  ce.setInputTarget (clouds[i]);
-			  ce.setInputCloud (clouds[j]);
-			  pcl::CorrespondencesPtr corr (new pcl::Correspondences);
-			  ce.determineCorrespondences (*corr, threshold_determine_correspondences);
+				pcl::registration::CorrespondenceEstimation<PointType, PointType> ce;
+				ce.setInputTarget (clouds[i]);
+				ce.setInputCloud (clouds[j]);
+				pcl::CorrespondencesPtr corr (new pcl::Correspondences);
+				ce.determineCorrespondences (*corr, threshold_determine_correspondences);
 
-			  if (corr->size () > (float(clouds[j]->size()) * threshold_overlap) )
-			  {				  
-				lum.setCorrespondences (j, i, corr);
-				std::cout << "add connection between " << i << " (" << cloudIds[i] << ") and " << j << " (" << cloudIds[j] << ")" << std::endl;
-			  }
+				if (corr->size () > (float(clouds[j]->size()) * threshold_overlap) )
+				{				  
+					lum.setCorrespondences (j, i, corr);
+					std::cout << "add connection between " << i << " (" << cloudIds[i] << ") and " << j << " (" << cloudIds[j] << ")" << std::endl;
+				}
 			}
 
 		}
 	}
 
-	lum.compute ();
+	lum.compute();
 
 	for(size_t i = 0; i < lum.getNumVertices (); i++)
 	{
@@ -141,11 +142,11 @@ int main (int argc, char **argv)
 		Eigen::Affine3f tr2;
 		model.getAffine(cloudIds[i], tr2.matrix());
 		Eigen::Affine3f tr = lum.getTransformation(i);
-		
+
 		Eigen::Affine3f final = tr * tr2;
 		modelAfterLum.setAffine(cloudIds[i], final.matrix());
 	}
-	
+
 	modelAfterLum.saveFile(output_file_name);
 
 	return 0;

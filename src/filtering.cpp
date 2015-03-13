@@ -22,6 +22,7 @@ int main (int argc, char** argv)
 		std::cout << argv[0] << " input_model.xml output_model.xml parameters\n";
 		std::cout << " -k <number>\t\tSet the number of nearest neighbors to use for mean distance estimation. Default: " << MeanK << std::endl;
 		std::cout << " -s <multiplier>\tSet the standard deviation multiplier for the distance threshold calculation. Default: " << StddevMulThresh << std::endl;
+
 		return -1;
 	}
 
@@ -129,12 +130,12 @@ int main (int argc, char** argv)
 		pcl::StopWatch sw;
 		sw.reset();
 		sor.filter (*outputCloud);
-		double exTime = sw.getTime();
+		double time = sw.getTime();
 
 		std::cout << "Size before: " << inputCloud->size() << " Size after: "<<outputCloud->size() << std::endl;
 
 		//Increase total computation time
-		totalTime+=exTime;
+		totalTime+=time;
 
 		std::cout <<"saving pointcloud :" << outputFn<<"\n";
 		pcl::io::savePCDFile(outputFn, *outputCloud);
@@ -149,7 +150,7 @@ int main (int argc, char** argv)
 		//save results
 		outputModel.setResult(cloud_ids[i], "size_before_filtering",inputCloud->height*inputCloud->width);
 		outputModel.setResult(cloud_ids[i], "size_after_filtering",outputCloud->height*outputCloud->width);
-		outputModel.setResult(cloud_ids[i], "computation_time", exTime);
+		outputModel.setResult(cloud_ids[i], "computation_time", time);
 		outputModel.setResult(cloud_ids[i], "cummulative_filter_time", totalTime);
 
 	}
