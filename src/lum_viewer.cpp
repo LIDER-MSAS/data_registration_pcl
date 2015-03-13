@@ -193,7 +193,16 @@ int main (int argc, char * argv [])
 	std::cout << "threshold_overlap = " << threshold_overlap << std::endl;
 	//std::cout << "convergenceThreshold = " << convergenceThreshold << std::endl;
 
-	model.loadFile(argv[1]);
+	
+	
+	std::vector<int> xml_indices;
+	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
+	
+	if(xml_indices.size()!=1)
+	{
+		return -2;
+	}
+	model.loadFile(argv[xml_indices[0]]);
 
 	pcl::registration::LUM<PointType> lum;
 	//lum.setMaxIterations (lumIter);

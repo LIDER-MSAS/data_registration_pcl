@@ -99,9 +99,17 @@ int main (int argc, char **argv)
 
 		return -1;
 	}
+	
+	std::vector<int> xml_indices;
+	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
+	
+	if(xml_indices.size()!=2)
+	{
+		return -2;
+	}
 
-	std::string input_file_name(argv[1]);
-	std::string output_file_name(argv[2]);
+	std::string input_file_name(argv[xml_indices[0]]);
+	std::string output_file_name(argv[xml_indices[1]]);
 
 
 

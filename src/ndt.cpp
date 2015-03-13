@@ -56,7 +56,6 @@ float cumulative_align_time = 0.0f;
 
 bool registerNDT(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &scan, Eigen::Affine3f &metascanToScan, std::string cloudId)
 {
-	std::cout <<"invoking NDT\n";
 	pcl::NormalDistributionsTransform<PointT, PointT> * ndt = new pcl::NormalDistributionsTransform<PointT, PointT>();
 
 	ndt->setMaximumIterations (ndt_iter);
@@ -72,12 +71,13 @@ bool registerNDT(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 	ndt->align (*tmp);
 	float executionTime = sw.getTime();
 
+	std::cout << "After NDT:\n";
 	std::cout << ndt->getFinalTransformation () << std::endl;
 	metascanToScan = ndt->getFinalTransformation();
 	outputXML.setResult(cloudId, "FitnessScore", ndt->getFitnessScore());
 	cumulative_align_time +=executionTime;
 	outputXML.setResult(cloudId, "AlignTime", executionTime);
-	outputXML.setResult(cloudId, "CummulativeAlignTime", cumulative_align_time);
+	outputXML.setResult(cloudId, "CumulativeAlignTime", cumulative_align_time);
 	
 	return true;
 }
