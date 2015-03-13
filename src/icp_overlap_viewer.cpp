@@ -37,7 +37,9 @@ void loadPointcloud (pcl::PointCloud<PointT> &scan, std::string id)
 	std::cout <<"marix transform: \n "<< mat << "\n";
 	pcl::transformPointCloud(scan,scan,mat);
 }
- 
+
+
+
 int main (int argc, char** argv)
 {
 	if(argc < 3)
@@ -78,6 +80,25 @@ int main (int argc, char** argv)
 	myIcp<PointT, PointT> *icp;
 	icp = new myIcp<PointT, PointT>();
  
+	Eigen::Vector4f centroid1;
+	Eigen::Vector4f centroid2;
+
+	pcl::PointXYZ pcentroid1;
+	pcl::PointXYZ pcentroid2;
+
+	
+	pcl::compute3DCentroid(scan1, centroid1);
+	pcl::compute3DCentroid(scan2, centroid2);
+
+	
+	pcentroid1.x = centroid1.x();
+	pcentroid1.y = centroid1.y();
+	pcentroid1.z = centroid1.z();
+
+	pcentroid2.x = centroid2.x();
+	pcentroid2.y = centroid2.y();
+	pcentroid2.z = centroid2.z();
+
 	icp->setMaximumIterations (0);
 	icp->setMaxCorrespondenceDistance (maxCorrespondenceDistance);
 	icp->setRANSACOutlierRejectionThreshold (RANSACOutlierRejectionThreshold);
@@ -90,6 +111,9 @@ int main (int argc, char** argv)
 	pcl::Correspondences corr = *(icp->getCorrespondeces());
 	p.addPointCloud(scan1.makeShared(), handler_scan1 , "scan1");
 	p.addPointCloud(scan2.makeShared(), handler_scan2 , "scan2");
+	p.addSphere<pcl::PointXYZ>(pcentroid1,0.5,"centroid1",0);
+	p.addSphere<pcl::PointXYZ>(pcentroid2,0.5,"centroid2",0);
+
 	for (int i=0; i< corr.size(); i++)
 	{
 		int i1= corr[i].index_match;
