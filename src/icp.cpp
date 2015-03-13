@@ -59,7 +59,8 @@ float  cummulativeTime =0;
 double icp_CorrespondenceDistance = 0.15;
 double icp_RANSACOutlierRejectionThreshold = 0.15;
 int icp_MaximumIterations = 100;
-
+int RANSACIterations=0;
+double TransformationEpsilon=0.0;
 
 bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &scan, Eigen::Affine3f &metascanToScan, std::string cloudId)
 {
@@ -67,10 +68,12 @@ bool registerICP(pcl::PointCloud<PointT> &metascan, pcl::PointCloud<PointT> &sca
 
 	myIcp<PointT, PointT> *icp;
 	icp = new myIcp<PointT, PointT>();	//TODO: change to smart pointer
-
-	icp->setMaximumIterations (icp_MaximumIterations);
-	icp->setMaxCorrespondenceDistance (icp_CorrespondenceDistance);
-	icp->setRANSACOutlierRejectionThreshold (icp_RANSACOutlierRejectionThreshold);
+	
+	icp->setTransformationEpsilon(TransformationEpsilon);
+	icp->setRANSACIterations(RANSACIterations);
+	icp->setMaximumIterations(icp_MaximumIterations);
+	icp->setMaxCorrespondenceDistance(icp_CorrespondenceDistance);
+	icp->setRANSACOutlierRejectionThreshold(icp_RANSACOutlierRejectionThreshold);
 
 	icp->setInputTarget (metascan.makeShared());
 	icp->setInputSource (scan.makeShared());
@@ -209,14 +212,20 @@ transformed source index is smaller than the given inlier distance threshold.\tD
 		std::cout << " -i\tSets the maximum number of iterations the internal optimization should run for.\tDefault: " << icp_MaximumIterations << std::endl;
 		std::cout << " -m\tSets the usage of metascan.\tDefault: " << isUseMetascan << std::endl;
 
-		pcl::console::parse_argument (argc, argv, "-d", icp_CorrespondenceDistance);
-		pcl::console::parse_argument (argc, argv, "-r", icp_RANSACOutlierRejectionThreshold);
-		pcl::console::parse_argument (argc, argv, "-i", icp_MaximumIterations);
-		pcl::console::parse_argument (argc, argv, "-m", isUseMetascan);
+		std::cout << " -ri\tSets the number of iterations RANSAC should run for.\tDefault: " << RANSACIterations << std::endl;
+		std::cout << " -eps\tSets the usage of metascan.\tDefault: " << TransformationEpsilon << std::endl;
+
 	
 		return -1;
 	}
 
+		pcl::console::parse_argument (argc, argv, "-d", icp_CorrespondenceDistance);
+		pcl::console::parse_argument (argc, argv, "-r", icp_RANSACOutlierRejectionThreshold);
+		pcl::console::parse_argument (argc, argv, "-i", icp_MaximumIterations);
+		pcl::console::parse_argument (argc, argv, "-m", isUseMetascan);
+		
+		pcl::console::parse_argument (argc, argv, "-ri", RANSACIterations);
+		pcl::console::parse_argument (argc, argv, "-eps", TransformationEpsilon);
 
 	std::vector<int> xml_indices;
 	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
@@ -245,6 +254,8 @@ transformed source index is smaller than the given inlier distance threshold.\tD
 	outputXML.addAlgorithmParam("icp_RANSACOutlierRejectionThreshold",icp_RANSACOutlierRejectionThreshold);
 	outputXML.addAlgorithmParam("icp_MaximumIterations",icp_MaximumIterations);
 	outputXML.addAlgorithmParam("isUseMetascan",isUseMetascan);
+	outputXML.addAlgorithmParam("RANSACIterations",RANSACIterations);
+	outputXML.addAlgorithmParam("TransformationEpsilon",TransformationEpsilon);
 
 
 	std::string dataPath;
