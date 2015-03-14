@@ -62,8 +62,8 @@ int main ()
 		pi.x = p.x;
 		pi.y = p.y;
 		pi.z = p.z;
-		pi.intensity = p.x;
-		planeInlinersDistance->push_back(pi);
+		pi.intensity = distances[i];
+		if (pi.intensity< 0.15)	planeInlinersDistance->push_back(pi);
 
 	}
 	//p.addPointCloud(plane,handler_plane,"plane");

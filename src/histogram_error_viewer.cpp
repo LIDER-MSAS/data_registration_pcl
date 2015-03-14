@@ -40,7 +40,9 @@ void createMetascan (data_model &model, pcl::PointCloud<PointT> &pc)
 
 int main (int argc, char** argv)
 {
+	
 	bool skip_registration = false;
+	
 	pcl::PointCloud<PointT> submetascanTarget;
 	pcl::PointCloud<PointT> alignedSourceMetascan;
 
@@ -65,8 +67,8 @@ int main (int argc, char** argv)
 		createMetascan(modelSource, metascanSource);
 		createMetascan(modelTarget, metascanTarget);
 		// saving metascan - in lcoal cooridanate system - for manula registration in CloudCompare
-		//pcl::io::savePCDFile ("metaSource.pcd", metascanSource);
-		//pcl::io::savePCDFile ("metaTarget.pcd", metascanTarget);
+		pcl::io::savePCDFile ("metaSource.pcd", metascanSource);
+		pcl::io::savePCDFile ("metaTarget.pcd", metascanTarget);
 
 
 
@@ -124,7 +126,7 @@ int main (int argc, char** argv)
 	std::vector <double> distances;
 	std::vector <double> normalAngles;
 
-	double radius = 0.5;
+	double radius = 1.0;
 
 	treeAlignedSourceMetascan->setInputCloud(alignedSourceMetascan.makeShared());
 	for (int i=0; i < submetascanTarget.size(); i++)
@@ -136,19 +138,27 @@ int main (int argc, char** argv)
 		treeAlignedSourceMetascan->nearestKSearch(p,1, indices, sqrdistance);
 		if (sqrdistance.size() >0)
 		{
-			if (sqrdistance[0]<radius)
+			int i = indices[0];
+			Eigen::Vector4f  qN = alignedSourceMetascan[i].getNormalVector4fMap();
+			if (sqrdistance[0]<(0.5*0.5))
 			{
-				int i = indices[0];
-				Eigen::Vector4f  qN = alignedSourceMetascan[i].getNormalVector4fMap();
-				distances.push_back(sqrdistance[0]);
-				float c = qN.dot(pN);
-				normalAngles.push_back(acos(c));
+				
+				distances.push_back(sqrt(sqrdistance[0]));
+
+				
 			}
-			
+
+			if (sqrdistance[0]<(0.5*0.5))
+			{
+				float c = qN.dot(pN);
+				normalAngles.push_back(180.0*acos(c)/M_PI);
+			}
 		}
 	}
 
 
+	std::cout << "distances size " << distances.size() <<"\n";
+	std::cout << "normalAngles size " << normalAngles.size() <<"\n";
 
 	//vis
 	pcl::visualization::PCLPlotter  plotter1;
@@ -162,14 +172,23 @@ int main (int argc, char** argv)
 	p.addPointCloud<PointT>(submetascanTarget.makeShared(),metascanSource_color_handler,"sorce");
 	p.addPointCloud<PointT>(alignedSourceMetascan.makeShared(),metascanTarget_color_handler,"target");
 	
-	
+	plotter1.setTitle("NN-distance Histogram");
+	plotter1.setXTitle("Distance [m]");
+	plotter1.setYTitle("Point count");
+
+	plotter2.setTitle("Normal Histogram");
+	plotter2.setXTitle("Angle");
+	plotter2.setYTitle("Point count");
+
+
 
 
 	while (1)
 	{
+
 		p.spinOnce();
 		plotter1.spinOnce();
-		plotter2.spinOnce();
+		plotter2.spinOnce();	
 	}
 	return 0;
 }
