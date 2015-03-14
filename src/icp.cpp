@@ -135,7 +135,6 @@ void loadNextPc()
 	else
 	{
 		std::cout <<"There is no more pointclouds in given model \n";
-
 	}
 }
 
@@ -167,8 +166,6 @@ void registerScan()
 	else
 	{
 		printf("registration NOK %s \n", (indices[currentPointcloud]).c_str() ); //tu by sie przydala nazwa skanu
-
-	
 	}
 }
 
