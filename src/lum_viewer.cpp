@@ -181,7 +181,7 @@ int main (int argc, char * argv [])
 		return -1;
 	}
 	
-	PCLPlotter *plotter = new PCLPlotter ("My Plotter");
+	PCLPlotter *plotter = new PCLPlotter ("LuM Viewer");
     plotter->setShowLegend (true);
 
 	

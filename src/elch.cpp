@@ -80,8 +80,8 @@ bool loopDetection (int end, const CloudVector &clouds, double dist, int &first,
 
 int main (int argc, char **argv)
 {
-	double maxCorrespondenceDistance = 0.1;
-	double RANSACOutlierRejectionThreshold = 0.1;
+	double maxCorrespondenceDistance = 0.15;
+	double RANSACOutlierRejectionThreshold = 0.15;
 	int maximumICPIterations = 100;
 	double loopdetectiondistance = 3.0;
 

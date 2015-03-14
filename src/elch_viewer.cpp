@@ -19,9 +19,6 @@
 
 #include <pcl/console/parse.h>
 
-
-
-
 typedef pcl::PointXYZ PointType;
 typedef pcl::PointCloud<PointType> Cloud;
 typedef Cloud::ConstPtr CloudConstPtr;
@@ -32,13 +29,8 @@ typedef std::vector<CloudPair> CloudVector;
 using namespace std;
 using namespace pcl::visualization;
 
-//............................................................................
-
-
 
 typedef pcl::PointXYZ PointType;
-
-
 
 data_model model;
 data_model modelAfterLum;
@@ -55,7 +47,6 @@ Eigen::Vector3f getOrigin (int id )
 	origin = mm * Eigen::Vector3f(0,0,0);
 	return origin;
 }
-
 
 void createTrayectory (data_model &tr1, std::vector<double> &x, std::vector<double> &y)
 {
@@ -80,8 +71,7 @@ void createTrayectory (data_model &tr1, std::vector<double> &x, std::vector<doub
 	}
 }
 
-
-void addTrayectory(std::string xmlName, PCLPlotter * p)
+void addTrajectory(std::string xmlName, PCLPlotter * p)
 {
 	data_model tr1;
 	tr1.loadFile(xmlName);
@@ -109,21 +99,17 @@ void addEdgeToPlot(PCLPlotter * p, double x1, double y1, double x2, double y2, i
 	ay.push_back(y1);
 	ay.push_back(y2);
 
-
 	//addPlotData (std::vector< double > const &array_x, std::vector< double >const &array_y, char const *name="Y Axis", int type=vtkChart::LINE, std::vector< char > const &color=std::vector< char >())
 
 	stringstream ss;
 	ss << "edge: "<< index_i << "(" << x1 << "," << y1 << ")" << " " << index_j << "(" << x2 << "," << y2 << ")";
 	string str = ss.str();
 
-
 	p->addPlotData(ax,ay,str.c_str());
 
 	p->setXRange(-50,50);
 	p->setYRange(-50,50);
 }
-
-
 
 bool loopDetection (int end, const CloudVector &clouds, double dist, int &first, int &last)
 {
@@ -170,7 +156,6 @@ bool loopDetection (int end, const CloudVector &clouds, double dist, int &first,
 	return false;
 }
 
-
 int main (int argc, char * argv [])
 {
 	double maxCorrespondenceDistance = 0.1;
@@ -190,10 +175,9 @@ int main (int argc, char * argv [])
 		return -1;
 	}
 
-	PCLPlotter *plotter = new PCLPlotter ("My Plotter");
+	PCLPlotter *plotter = new PCLPlotter ("ELCH Viewer");
 	plotter->setShowLegend (true);
 	
-
 	std::vector<int> xml_indices;
 	xml_indices = pcl::console::parse_file_extension_argument (argc, argv, ".xml");
 	
@@ -202,17 +186,15 @@ int main (int argc, char * argv [])
 		return -2;
 	}
 
-
 	std::string input_file_name(argv[xml_indices[0]]);
-	//std::string output_file_name(argv[2]);
 
-	addTrayectory(input_file_name, plotter);
-
-
+	addTrajectory(input_file_name, plotter);
+	
 	pcl::console::parse_argument (argc, argv, "-d", maxCorrespondenceDistance);
 	pcl::console::parse_argument (argc, argv, "-r", RANSACOutlierRejectionThreshold);
 	pcl::console::parse_argument (argc, argv, "-i", maximumICPIterations);
 	pcl::console::parse_argument (argc, argv, "-l", loopdetectiondistance);
+
 
 	pcl::registration::ELCH<PointType> elch;
 	pcl::IterativeClosestPoint<PointType, PointType>::Ptr icp (new pcl::IterativeClosestPoint<PointType, PointType>);

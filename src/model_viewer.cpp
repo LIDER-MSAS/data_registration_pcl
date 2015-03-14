@@ -35,7 +35,7 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void
 			p.addPointCloud(pcs[i], pcsName[i]);
 		}		
 	}
-	if (event.getKeySym()=="2" && event.keyUp())
+	if (event.getKeySym()=="3" && event.keyUp())
 	{
 		std::cout <<" will show all scans in multi colors\n";
 		p.removeAllPointClouds();
