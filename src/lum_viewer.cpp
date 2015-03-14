@@ -164,6 +164,10 @@ loopDetection (int end, const CloudVector &clouds, double dist, int &first, int 
 
 int main (int argc, char * argv [])
 {
+	double threshold_diff_norm = 3.0;
+	double threshold_determine_correspondences =1.5;
+	double threshold_overlap = 0.3;
+
 	if(argc < 2)
 	{
 		printf("usage: graph_viewer xxx.xml -t 3.0 -d 50 -c 1.5 -o 0.3\n");
@@ -171,6 +175,14 @@ int main (int argc, char * argv [])
 		//printf("-c convergenceThreshold\n");
 		printf("-o threshold_overlap\n");
 		printf("-r threshold_determine_correspondences\n");
+		
+		std::cout << "Usage:\n";
+		std::cout << argv[0] << "input.xml output.xml parameters\n";
+		//std::cout << " -i\tSets the maximum number of LUM iterations. Deafult: "<<lumIter<<std::endl;
+		//std::cout << " -c\tSets the convergence threshold. Use -c 0 to do maximum number of iterations. Deafult: "<<convergenceThreshold<<std::endl;
+		std::cout << " -d\tSets the maximum distance between scans to consider a link. Deafult: "<<threshold_diff_norm<<std::endl;
+		std::cout << " -r\tSets the radius for the nearest neighbor search. Deafult: "<<threshold_determine_correspondences<<std::endl;
+		std::cout << " -o\tSets the minimum overlap between scans to consider a link. -o 0.6 means 60% overlap. Deafult: "<<threshold_overlap<<std::endl;
 
 		return -1;
 	}
@@ -178,19 +190,18 @@ int main (int argc, char * argv [])
 	PCLPlotter *plotter = new PCLPlotter ("My Plotter");
     plotter->setShowLegend (true);
 
-	double threshold_diff_norm = 3.0;
-	//double convergenceThreshold = 0.0001;
-	double threshold_determine_correspondences =1.5;
-	double threshold_overlap = 0.3;
+	
 
-	pcl::console::parse_argument (argc, argv, "-t", threshold_diff_norm);
+	//pcl::console::parse_argument (argc, argv, "-i", lumIter);
 	//pcl::console::parse_argument (argc, argv, "-c", convergenceThreshold);
+	pcl::console::parse_argument (argc, argv, "-d", threshold_diff_norm);
 	pcl::console::parse_argument (argc, argv, "-r", threshold_determine_correspondences);
 	pcl::console::parse_argument (argc, argv, "-o", threshold_overlap);
 	
 	std::cout << "threshold_diff_norm = " << threshold_diff_norm << std::endl;
 	std::cout << "threshold_determine_correspondences = " << threshold_determine_correspondences << std::endl;
 	std::cout << "threshold_overlap = " << threshold_overlap << std::endl;
+	//std::cout << "lumIter = " << lumIter << std::endl;
 	//std::cout << "convergenceThreshold = " << convergenceThreshold << std::endl;
 
 	
