@@ -170,12 +170,6 @@ int main (int argc, char * argv [])
 
 	if(argc < 2)
 	{
-		printf("usage: graph_viewer xxx.xml -t 3.0 -d 50 -c 1.5 -o 0.3\n");
-		printf("-t threshold_diff_norm\n");
-		//printf("-c convergenceThreshold\n");
-		printf("-o threshold_overlap\n");
-		printf("-r threshold_determine_correspondences\n");
-		
 		std::cout << "Usage:\n";
 		std::cout << argv[0] << "input.xml output.xml parameters\n";
 		//std::cout << " -i\tSets the maximum number of LUM iterations. Deafult: "<<lumIter<<std::endl;
