@@ -6,6 +6,7 @@
 #include <boost/optional/optional.hpp>
 #include <Eigen/Eigen>
 #include <boost/filesystem.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 class data_model
 {
 public:
@@ -49,6 +50,9 @@ public:
 
 	void getGlobalModelMatrix(Eigen::Matrix4f &matrix);
 	void setGlobalModelMatrix(Eigen::Matrix4f matrix);
+
+    void setTimestamp (std::string scanId, boost::posix_time::ptime ts);
+    bool getTimestamp (std::string scanId, boost::posix_time::ptime &ts);
 
 private:
 	boost::property_tree::ptree pt_;

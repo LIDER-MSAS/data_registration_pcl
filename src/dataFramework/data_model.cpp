@@ -55,7 +55,8 @@
 			//ss>>matrix(2,0)>>matrix(2,1)>>matrix(2,2)>>matrix(2,3);
 			//ss>>matrix(3,0)>>matrix(3,1)>>matrix(3,2)>>matrix(3,3);
 			return true;
-		}
+        }
+
 		if (type.compare("Vector3f_Quaternionf")==0)
 		{
 			Eigen::Quaternionf q;
@@ -272,7 +273,7 @@
 			//column major order
 			ss>>matrix(0,0)>>matrix(1,0)>>matrix(2,0)>>matrix(3,0);
 			ss>>matrix(0,1)>>matrix(1,1)>>matrix(2,1)>>matrix(3,1);
-			ss>>matrix(0,2)>>matrix(1,2)>>matrix(2,2)>>matrix(3,2);
+            ss>>matrix(0,2)>>matrix(1,2)>>matrix(2,2)>>matrix(3,2);
 			ss>>matrix(0,3)>>matrix(1,3)>>matrix(2,3)>>matrix(3,3);
 
 			//row major order
@@ -311,3 +312,16 @@
 		pt_.put("Model.GlobalTransformation.Affine.Data", ss.str());
 
 	}
+    void data_model::setTimestamp (std::string scanId, boost::posix_time::ptime ts)
+    {
+        pt_.put("Model.Transformations."+scanId+".timestamp", boost::posix_time::to_iso_string(ts));
+    }
+
+    bool data_model::getTimestamp (std::string scanId, boost::posix_time::ptime &ts)
+    {
+       if (!checkIfExists("Model.Transformations."+scanId+".timestamp")) return false;
+       std::string isoTime;
+       pt_.get("Model.Transformations."+scanId+".timestamp", isoTime);
+       ts = boost::posix_time::from_iso_string(isoTime);
+       return true;
+    }
