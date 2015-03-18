@@ -126,7 +126,7 @@ int main (int argc, char** argv)
 	std::vector <double> distances;
 	std::vector <double> normalAngles;
 
-	double radius = 1.0;
+	double radius = 0.5;
 
 	treeAlignedSourceMetascan->setInputCloud(alignedSourceMetascan.makeShared());
 	for (int i=0; i < submetascanTarget.size(); i++)
@@ -148,10 +148,13 @@ int main (int argc, char** argv)
 				
 			}
 
-			if (sqrdistance[0]<(0.5*0.5))
+			if (sqrdistance[0]<(0.7*0.7))
 			{
 				float c = qN.dot(pN);
-				normalAngles.push_back(180.0*acos(c)/M_PI);
+				float ang = 180.0*acos(c)/M_PI;
+				if (ang == ang ) normalAngles.push_back(ang);
+				
+
 			}
 		}
 	}

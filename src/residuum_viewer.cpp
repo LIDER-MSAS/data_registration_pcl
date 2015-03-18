@@ -16,15 +16,16 @@ using namespace std;
 typedef pcl::PointXYZ PointT;
 pcl::visualization::PCLVisualizer p;
 
-int main ()
+int main (int argc, char** argv)
 {
 
+	std::string planeFN = argv[1];
 	pcl::PointCloud<PointT>::Ptr plane (new pcl::PointCloud<PointT>);
 	pcl::PointCloud<PointT>::Ptr planeInliners (new pcl::PointCloud<PointT>);
 	pcl::PointCloud<pcl::PointXYZI>::Ptr planeInlinersDistance (new pcl::PointCloud<pcl::PointXYZI>);
 
 
-	pcl::io::loadPCDFile("plane.pcd", *plane);
+	pcl::io::loadPCDFile(planeFN, *plane);
 	std::vector<int> inliers;
 
 	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr model_p (new pcl::SampleConsensusModelPlane<pcl::PointXYZ> (plane));
@@ -72,7 +73,7 @@ int main ()
 	//p.addCoordinateSystem(10);
 	p.addPointCloud(planeInlinersDistance, intensity_distribution);
 	//pcl::io::savePCDFile("pc.pcd", *intensity_distribution);
-
+	p.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
 	p.setBackgroundColor(0xff,0xff,0xff);
 	p.spin();
   return 0;
