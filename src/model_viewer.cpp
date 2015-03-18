@@ -4,7 +4,7 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/common/transforms.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include "dataFramework\data_model.hpp"
+#include "dataFramework/data_model.hpp"
 
 typedef pcl::PointXYZ PointT;
 pcl::visualization::PCLVisualizer p;

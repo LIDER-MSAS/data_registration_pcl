@@ -25,7 +25,7 @@ template <typename PointSource, typename PointTarget, typename Scalar = float> c
 public:
 	pcl::CorrespondencesPtr getCorrespondeces()
 	{
-		return correspondences_;
+        return pcl::IterativeClosestPoint <PointSource, PointTarget, Scalar >::correspondences_;
 	}
 };
 

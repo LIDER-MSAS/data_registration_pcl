@@ -6,7 +6,7 @@
 #include <pcl/common/transforms.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/registration/correspondence_estimation.h>
-#include "dataFramework\data_model.hpp"
+#include "dataFramework/data_model.hpp"
 #include <pcl/registration/icp.h>
 
 
@@ -22,7 +22,7 @@ template <typename PointSource, typename PointTarget, typename Scalar = float> c
 public:
 	pcl::CorrespondencesPtr getCorrespondeces()
 	{
-		return correspondences_;
+        return pcl::IterativeClosestPoint <PointSource, PointTarget, Scalar >::correspondences_;
 	}
 };
  

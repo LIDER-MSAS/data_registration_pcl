@@ -1,6 +1,6 @@
 #include <iostream>
-#include "dataFramework\data_model.hpp"
-#include <boost\lexical_cast.hpp>
+#include "dataFramework/data_model.hpp"
+#include <boost/lexical_cast.hpp>
 
 int main (int argc, char** argv)
 {

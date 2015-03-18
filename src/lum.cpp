@@ -7,8 +7,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "dataFramework\data_model.hpp"
-#include <Eigen\Eigen>
+#include "dataFramework/data_model.hpp"
+#include <Eigen/Eigen>
 
 typedef pcl::PointXYZ PointType;
 

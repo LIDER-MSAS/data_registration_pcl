@@ -1,5 +1,5 @@
 
-#include "viewerlog.hpp"
+#include "viewerLog.hpp"
 
 
 logViewer::logViewer(pcl::visualization::PCLVisualizer* _viewer, int _msgCount)

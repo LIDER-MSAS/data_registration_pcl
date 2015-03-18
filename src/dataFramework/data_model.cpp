@@ -11,7 +11,7 @@
 
 		//check if the name is valid
 		std::ifstream f;
-		f.open(fn);
+        f.open(fn.c_str());
 		if(f.good())
 		{
 			f.close();
@@ -26,8 +26,8 @@
 	}
 
 	bool data_model::saveFile(std::string fn)
-	{
-		boost::property_tree::write_xml(fn, pt_, std::locale(), boost::property_tree::xml_writer_make_settings<boost::property_tree::ptree::key_type>(' ', 1u));
+    {
+        boost::property_tree::write_xml(fn, pt_, std::locale(), boost::property_tree::xml_writer_make_settings<char>(' ', 1u));
 		xmlPath = boost::filesystem::path(fn);
 		return true;
 	}

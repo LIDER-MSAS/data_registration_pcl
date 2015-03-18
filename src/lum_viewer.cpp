@@ -4,8 +4,8 @@
 #include<vector>
 #include<utility>
 #include<math.h>  //for abs()
-#include"dataFramework\data_model.hpp"
-#include <Eigen\Eigen>
+#include"dataFramework/data_model.hpp"
+#include <Eigen/Eigen>
 
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
