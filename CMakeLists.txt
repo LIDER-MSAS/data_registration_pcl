@@ -46,8 +46,8 @@ target_link_libraries (lum_viewer ${PCL_LIBRARIES})
 add_executable (icp_overlap_viewer src/icp_overlap_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
 target_link_libraries (icp_overlap_viewer ${PCL_LIBRARIES})
 
-add_executable (ndt_grid_viewer src/ndt_grid_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
-target_link_libraries (ndt_grid_viewer ${PCL_LIBRARIES})
+#add_executable (ndt_grid_viewer src/ndt_grid_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
+#target_link_libraries (ndt_grid_viewer ${PCL_LIBRARIES})
 
 add_executable (residuum_viewer src/residuum_viewer.cpp ${DATA_FRAMEWORK_SOURCES})
 target_link_libraries (residuum_viewer ${PCL_LIBRARIES})

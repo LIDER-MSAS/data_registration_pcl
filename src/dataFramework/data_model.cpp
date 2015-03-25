@@ -1,3 +1,42 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Data Registration Framework - Mobile Spatial Assistance System
+ *  Copyright (c) 2014-2015, Institute of Mathematical Machine
+ *  http://lider.zms.imm.org.pl/
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Institute of Mathematical Machine nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id$
+ */
+
 #include "data_model.hpp"
 #include <boost/property_tree/detail/xml_parser_writer_settings.hpp>
 #include <boost/foreach.hpp>
@@ -11,7 +50,7 @@
 
 		//check if the name is valid
 		std::ifstream f;
-		f.open(fn);
+        f.open(fn.c_str());
 		if(f.good())
 		{
 			f.close();
@@ -26,8 +65,11 @@
 	}
 
 	bool data_model::saveFile(std::string fn)
-	{
-		boost::property_tree::write_xml(fn, pt_, std::locale(), boost::property_tree::xml_writer_make_settings<boost::property_tree::ptree::key_type>(' ', 1u));
+    {
+		//caused problems on VS2010, BOOST 1.55
+        //boost::property_tree::write_xml(fn, pt_, std::locale(), boost::property_tree::xml_writer_make_settings<char>(' ', 1u));
+		boost::property_tree::write_xml(fn, pt_, std::locale(), boost::property_tree::xml_writer_make_settings<std::string>(' ', 1u));
+
 		xmlPath = boost::filesystem::path(fn);
 		return true;
 	}
@@ -55,7 +97,8 @@
 			//ss>>matrix(2,0)>>matrix(2,1)>>matrix(2,2)>>matrix(2,3);
 			//ss>>matrix(3,0)>>matrix(3,1)>>matrix(3,2)>>matrix(3,3);
 			return true;
-		}
+        }
+
 		if (type.compare("Vector3f_Quaternionf")==0)
 		{
 			Eigen::Quaternionf q;
@@ -272,7 +315,7 @@
 			//column major order
 			ss>>matrix(0,0)>>matrix(1,0)>>matrix(2,0)>>matrix(3,0);
 			ss>>matrix(0,1)>>matrix(1,1)>>matrix(2,1)>>matrix(3,1);
-			ss>>matrix(0,2)>>matrix(1,2)>>matrix(2,2)>>matrix(3,2);
+            ss>>matrix(0,2)>>matrix(1,2)>>matrix(2,2)>>matrix(3,2);
 			ss>>matrix(0,3)>>matrix(1,3)>>matrix(2,3)>>matrix(3,3);
 
 			//row major order
@@ -311,3 +354,16 @@
 		pt_.put("Model.GlobalTransformation.Affine.Data", ss.str());
 
 	}
+    void data_model::setTimestamp (std::string scanId, boost::posix_time::ptime ts)
+    {
+        pt_.put("Model.Transformations."+scanId+".timestamp", boost::posix_time::to_iso_string(ts));
+    }
+
+    bool data_model::getTimestamp (std::string scanId, boost::posix_time::ptime &ts)
+    {
+       if (!checkIfExists("Model.Transformations."+scanId+".timestamp")) return false;
+       std::string isoTime;
+       pt_.get("Model.Transformations."+scanId+".timestamp", isoTime);
+       ts = boost::posix_time::from_iso_string(isoTime);
+       return true;
+    }
