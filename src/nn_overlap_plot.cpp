@@ -119,7 +119,7 @@ int main (int argc, char **argv)
 		ce.determineCorrespondences (*corr, threshold_determine_correspondences);
 
 		printf("i:%d j:%d corr: %d clouds[i]:%d clouds[j]:%d overlap:%.2f\n", i,j, corr->size (), clouds[i]->size(), clouds[j]->size(), float(corr->size ())/float(clouds[j]->size())*100.0);
-		addEdgeToPlot(plotter,i, j, float(corr->size ())/float(clouds[j]->size())*100.0,);
+		addEdgeToPlot(plotter,i, j, float(corr->size ())/float(clouds[j]->size())*100.0);
 	}
 
 	plotter->setXRange(0,clouds.size());
