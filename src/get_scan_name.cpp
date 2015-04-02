@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Data Registration Framework - Mobile Spatial Assistance System
- *  Copyright (c) 2014-2015, Institute of Mathematical Machine
+ *  Copyright (c) 2014-2015, Institute of Mathematical Machines
  *  http://lider.zms.imm.org.pl/
  *
  *  All rights reserved.
@@ -17,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Institute of Mathematical Machine nor the names of its
+ *   * Neither the name of Institute of Mathematical Machines nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -46,7 +46,7 @@ int main (int argc, char** argv)
 	if (argc != 3)
 	{
 		std::cerr<< "USAGE :" << argv[0]<<" xmlModel.xml scanNumber \n";
-		return -666;
+		return -1;
 	}
 
 	data_model tr;
@@ -61,5 +61,5 @@ int main (int argc, char** argv)
 	std::cout <<"scan name "<< ids[scanNo]<<"\n";
 
 
-		return 666;
+		return 0;
 }
